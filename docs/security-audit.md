@@ -1,8 +1,8 @@
-# Universal Logger Security Audit
+# Omni-Log Security Audit
 
 ## Summary
 
-This document outlines a security audit conducted on the Universal Logger package to identify potential security vulnerabilities, risks, and best practices recommendations. As a logging library with zero dependencies, Universal Logger has inherently lower security risks compared to packages with extensive dependency trees, but still requires careful consideration of its operational security aspects.
+This document outlines a security audit conducted on the Omni-Log package to identify potential security vulnerabilities, risks, and best practices recommendations. As a logging library with zero dependencies, Omni-Log has inherently lower security risks compared to packages with extensive dependency trees, but still requires careful consideration of its operational security aspects.
 
 ## Audit Date
 
@@ -10,7 +10,7 @@ June 4, 2025
 
 ## Package Information
 
-- **Package Name**: universal-logger
+- **Package Name**: omni-log
 - **Version**: 0.3.0
 - **Repository**: https://github.com/dev-ignis/universal-logger.git
 - **Dependencies**: None (zero dependencies)

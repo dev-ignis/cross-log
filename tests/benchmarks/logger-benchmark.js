@@ -161,7 +161,7 @@ async function runBenchmarkSuite() {
     
     console.log('\n📊 Performance Summary');
     console.log('------------------------------------');
-    console.log('The universal-logger overhead varies based on configuration.');
+    console.log('The omni-log overhead varies based on configuration.');
     console.log('When disabled, it adds minimal overhead compared to direct console calls.');
     console.log('Development mode with all features has the highest overhead but provides the most value.');
     console.log('------------------------------------');

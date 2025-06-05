@@ -6,10 +6,10 @@ This guide covers the fundamental usage patterns for the Universal Logger.
 
 ```bash
 # Using npm
-npm install universal-logger
+npm install omni-log
 
 # Using yarn
-yarn add universal-logger
+yarn add omni-log
 ```
 
 ## Quick Start Examples
@@ -19,7 +19,7 @@ yarn add universal-logger
 The simplest way to use Universal Logger is to import the default instance and start logging:
 
 ```typescript
-import logger from 'universal-logger';
+import logger from 'omni-log';
 
 // Basic logging
 logger.debug('Detailed debug information');
@@ -63,7 +63,7 @@ logger.warn('Slow query detected', 'db', { duration: '2.5s' });
 Control which logs are displayed:
 
 ```typescript
-import { LogLevel } from 'universal-logger';
+import { LogLevel } from 'omni-log';
 
 // Set minimum log level globally
 logger.setLevel(LogLevel.WARN);  // Only WARN and ERROR logs will show
@@ -107,7 +107,7 @@ Universal Logger automatically adapts to your environment:
 
 ```typescript
 // logger.ts
-import { createLogger } from 'universal-logger';
+import { createLogger } from 'omni-log';
 
 export const logger = createLogger({
   minLevel: process.env.NODE_ENV === 'development' ? 0 : 2
@@ -132,7 +132,7 @@ function UserProfile({ userId }) {
 
 ```typescript
 // logger.ts
-import { createLogger, LogLevel } from 'universal-logger';
+import { createLogger, LogLevel } from 'omni-log';
 
 export const logger = createLogger({
   minLevel: process.env.NODE_ENV === 'production' ? LogLevel.INFO : LogLevel.DEBUG
