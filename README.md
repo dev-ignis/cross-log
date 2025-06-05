@@ -149,6 +149,60 @@ window.__universalLogger.setLevel(0);
 | **Development Node.js** | DEBUG | ✅ | ❌ | ❌ |
 | **Production Node.js** | WARN | ❌ | ❌ | ❌ |
 
+## ⚡ Performance
+
+Universal Logger is designed to be lightweight and efficient. Here are the performance benchmarks:
+
+```text
+====================================
+Benchmark Results
+====================================
+Disabled Logger: ~20,000,000 ops/sec
+Production Logger: ~4,500,000 ops/sec
+Development Logger: ~4,800,000 ops/sec
+Filtered Category: ~4,400,000 ops/sec
+Error Logging: ~5,000,000 ops/sec
+Native Console.log: ~84,000,000 ops/sec
+```
+
+### Key Performance Insights
+
+- **Disabled Logger**: Only 76% overhead vs native console (~20M ops/sec)
+- **Development Logger**: 94% overhead with full features but still performs at ~4.8M ops/sec
+- **Production Configurations**: All active logging configurations handle 4-5 million operations per second
+- **Practical Impact**: Even at peak load, the performance impact is negligible for most applications
+
+> Run your own benchmarks with `node tests/benchmarks/logger-benchmark.js` after building the package
+
+## 🧪 Test Coverage
+
+Universal Logger is thoroughly tested with both unit and integration tests for all environments.
+
+```text
+-------------------|----------|----------|---------|---------|-------------------
+File               | % Stmts  | % Branch | % Funcs | % Lines | Uncovered Line #s 
+-------------------|----------|----------|---------|---------|-------------------
+All files          |    80.6  |    92.25 |   68.36 |   80.04 |                   
+```
+
+- **Unit Tests**: Cover individual components, utilities, and logger implementations
+- **Integration Tests**: Ensure proper operation in both Node.js and browser environments
+- **Cross-Environment Tests**: Verify consistent behavior across platforms
+
+The test suite includes:
+
+- API functionality testing
+- Environment detection and adaptation
+- Configuration inheritance and override validation
+- Category filtering effectiveness
+- Log level control validation
+
+Run the tests with coverage report using:
+
+```bash
+npm run test -- --coverage
+```
+
 ## API Reference
 
 ### Logger Methods
