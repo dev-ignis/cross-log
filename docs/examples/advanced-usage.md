@@ -7,7 +7,7 @@ This guide covers advanced patterns and configurations for Universal Logger.
 ### Full Configuration Example
 
 ```typescript
-import { createLogger, LogLevel } from 'omni-log';
+import { createLogger, LogLevel } from 'cross-log';
 
 const logger = createLogger({
   // Core settings
@@ -105,7 +105,7 @@ For consistent logging across your application:
 
 ```typescript
 // logger.ts
-import { createLogger, LogLevel, LoggerConfig } from 'omni-log';
+import { createLogger, LogLevel, LoggerConfig } from 'cross-log';
 
 class LoggerService {
   private static instance: LoggerService;
@@ -155,7 +155,7 @@ export const loggerService = LoggerService.getInstance();
 ```typescript
 // logger.service.ts
 import { Injectable } from '@angular/core';
-import { createLogger, LogLevel } from 'omni-log';
+import { createLogger, LogLevel } from 'cross-log';
 
 @Injectable({
   providedIn: 'root'
@@ -191,7 +191,7 @@ export class AppComponent {
 ### Conditional Logging Logic
 
 ```typescript
-import { LogLevel } from 'omni-log';
+import { LogLevel } from 'cross-log';
 
 // Avoid expensive computations when logging is disabled
 function logComplexData(data, category) {
@@ -252,7 +252,7 @@ function setupRemoteLogging() {
 ### Mocking the Logger
 
 ```typescript
-import { createLogger, LogLevel } from 'omni-log';
+import { createLogger, LogLevel } from 'cross-log';
 
 // Create a test logger with spies
 function createTestLogger() {
@@ -295,7 +295,7 @@ For more sophisticated environment variable mapping:
 
 ```typescript
 // config.ts
-import { LogLevel, LoggerConfig } from 'omni-log';
+import { LogLevel, LoggerConfig } from 'cross-log';
 
 function parseLogLevel(value: string | undefined): LogLevel {
   switch (value?.toUpperCase()) {

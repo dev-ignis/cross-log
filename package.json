@@ -1,5 +1,5 @@
 {
-  "name": "omni-log",
+  "name": "cross-log",
   "version": "0.3.0",
   "description": "A universal logging package that works in both browser and Node.js environments with environment variable configuration",
   "main": "dist/index.js",

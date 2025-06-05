@@ -2,7 +2,7 @@
 
 A universal logging package that works seamlessly in both browser and Node.js environments with environment variable configuration and zero dependencies.
 
-[![npm version](https://badge.fury.io/js/omni-log.svg)](https://badge.fury.io/js/omni-log)
+[![npm version](https://badge.fury.io/js/cross-log.svg)](https://badge.fury.io/js/cross-log)
 [![CI](https://github.com/dev-ignis/universal-logger/workflows/CI/badge.svg)](https://github.com/dev-ignis/universal-logger/actions)
 [![Coverage Status](https://coveralls.io/repos/github/dev-ignis/universal-logger/badge.svg?branch=master)](https://coveralls.io/github/dev-ignis/universal-logger?branch=master)
 [![TypeScript](https://img.shields.io/badge/TypeScript-ready-blue.svg)](https://www.typescriptlang.org)
@@ -22,7 +22,7 @@ A universal logging package that works seamlessly in both browser and Node.js en
 ## 📦 Installation
 
 ```bash
-npm install omni-log
+npm install cross-log
 ```
 
 ## 🚀 Quick Start
@@ -30,7 +30,7 @@ npm install omni-log
 ### Zero Configuration (Recommended)
 
 ```typescript
-import logger from 'omni-log';
+import logger from 'cross-log';
 
 // Works immediately with smart defaults
 logger.info('Application started');     // ✅ Always shown
@@ -42,7 +42,7 @@ logger.error('Error occurred');         // ❌ Always shown
 ### With Custom Configuration
 
 ```typescript
-import { createLogger, LogLevel } from 'omni-log';
+import { createLogger, LogLevel } from 'cross-log';
 
 const logger = createLogger({
   minLevel: LogLevel.WARN,
@@ -74,7 +74,7 @@ LOGGER_STORAGE_KEY_PREFIX=myapp    # Storage key prefix
 
 # Browser controls
 LOGGER_BROWSER_CONTROLS=true       # Enable window.* helper functions
-LOGGER_WINDOW_NAMESPACE=__myLogger # Window object namespace
+LOGGER_WINDOW_NAMESPACE=__Cross-Logger # Window object namespace
 
 # Custom colors
 LOGGER_COLOR_DEBUG=#6EC1E4         # Browser CSS colors
@@ -93,7 +93,7 @@ LOGGER_ANSI_ERROR=31
 ### Custom Configuration
 
 ```typescript
-import { createLogger, LogLevel } from 'omni-log';
+import { createLogger, LogLevel } from 'cross-log';
 
 const logger = createLogger({
   minLevel: LogLevel.INFO,

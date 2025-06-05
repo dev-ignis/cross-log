@@ -47,7 +47,7 @@ enum LogLevel {
 ### Creating a Custom Logger
 
 ```typescript
-import { createLogger, LogLevel } from 'omni-log';
+import { createLogger, LogLevel } from 'cross-log';
 
 const logger = createLogger({
   // Configuration options
