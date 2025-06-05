@@ -1,36 +1,57 @@
 # Universal Logger
 
-A universal logging library that works seamlessly in both browser and Node.js environments with environment variable configuration and smart defaults.
+A universal logging package that works seamlessly in both browser and Node.js environments with environment variable configuration and zero dependencies.
 
-## Features
+[![npm version](https://badge.fury.io/js/universal-logger.svg)](https://badge.fury.io/js/universal-logger)
+[![CI](https://github.com/dev-ignis/universal-logger/workflows/CI/badge.svg)](https://github.com/dev-ignis/universal-logger/actions)
+[![Coverage Status](https://coveralls.io/repos/github/dev-ignis/universal-logger/badge.svg?branch=master)](https://coveralls.io/github/dev-ignis/universal-logger?branch=master)
+[![TypeScript](https://img.shields.io/badge/TypeScript-ready-blue.svg)](https://www.typescriptlang.org)
 
-- 🌍 **Universal**: Works in both browser and Node.js environments
-- 🔧 **Configurable**: Environment variables with smart defaults
-- 🎨 **Styled Output**: CSS colors in browser, ANSI colors in Node.js
-- 💾 **Persistent**: Browser settings saved to localStorage
-- 🏷️ **Categories**: Organize logs by feature/module
-- 📊 **Log Levels**: DEBUG, INFO, WARN, ERROR, SILENT
-- 🚀 **Zero Dependencies**: Lightweight and secure
-- 📝 **TypeScript**: Full type safety and IntelliSense
+## ✨ Features
 
-## Quick Start
+- **🌍 Universal**: Single package works in browser and Node.js
+- **⚙️ Environment-driven**: Configuration via environment variables with smart defaults
+- **🪶 Zero dependencies**: Lightweight and secure
+- **📘 TypeScript-first**: Full type safety and IntelliSense
+- **🔄 Backward compatible**: Drop-in replacement for console logging
+- **🎨 Styled output**: Colors in browser console and ANSI colors in terminal
+- **💾 Persistent storage**: Browser localStorage integration for settings
+- **🏷️ Category-based**: Organize logs by categories with individual control
+- **⚡ Performance-optimized**: Duplicate log prevention and minimal overhead when disabled
+
+## 📦 Installation
 
 ```bash
 npm install universal-logger
 ```
 
+## 🚀 Quick Start
+
+### Zero Configuration (Recommended)
+
 ```typescript
 import logger from 'universal-logger';
 
 // Works immediately with smart defaults
-logger.info('Application started');
-logger.debug('Debug information');
-logger.warn('Warning message');
-logger.error('Error occurred');
+logger.info('Application started');     // ✅ Always shown
+logger.debug('Debug information');      // ✅ Shown in development
+logger.warn('Warning message');         // ⚠️ Always shown
+logger.error('Error occurred');         // ❌ Always shown
+```
 
-// With categories
-logger.info('User logged in', 'auth');
-logger.error('API request failed', 'api');
+### With Custom Configuration
+
+```typescript
+import { createLogger, LogLevel } from 'universal-logger';
+
+const logger = createLogger({
+  minLevel: LogLevel.WARN,
+  showTimestamp: true,
+  colors: { enabled: false }
+});
+
+logger.warn('This will show');
+logger.debug('This will not show');
 ```
 
 ## Environment Configuration

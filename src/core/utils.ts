@@ -49,7 +49,7 @@ export function parseEnvBoolean(value?: string, defaultValue: boolean = false): 
 /**
  * Parse integer from environment variable
  */
-export function parseEnvInt(value?: string, defaultValue: number): number {
+export function parseEnvInt(value: string | undefined, defaultValue: number): number {
   if (value === undefined) return defaultValue;
   const parsed = parseInt(value, 10);
   return isNaN(parsed) ? defaultValue : parsed;
@@ -80,7 +80,7 @@ export function isLoggingEnabled(
   messageLevel: LogLevel, 
   globalEnabled: boolean
 ): boolean {
-  return globalEnabled && messageLevel >= currentLevel && currentLevel < LogLevel.SILENT;
+  return globalEnabled && messageLevel >= currentLevel && currentLevel < LogLevel.SILENT && messageLevel < LogLevel.SILENT;
 }
 
 /**

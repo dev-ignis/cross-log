@@ -7,7 +7,7 @@ import { LoggerConfig, LogLevel, LogEntry } from '../core/types';
 import { getConsoleMethod } from '../core/utils';
 
 // Window interface extension for TypeScript
-interface WindowWithLogger extends Window {
+interface WindowWithLogger {
   [key: string]: unknown;
 }
 
@@ -27,7 +27,7 @@ export class BrowserLogger extends BaseLogger {
   protected outputLog(
     level: LogLevel,
     formattedMessage: string,
-    logEntry: LogEntry,
+    _logEntry: LogEntry,
     ...args: unknown[]
   ): void {
     const config = this.configManager.getConfig();
@@ -197,7 +197,7 @@ export class BrowserLogger extends BaseLogger {
       return;
     }
 
-    const win = window as WindowWithLogger;
+    const win = window as unknown as WindowWithLogger;
     const namespace = config.browserControls.windowNamespace;
 
     // Expose the logger instance

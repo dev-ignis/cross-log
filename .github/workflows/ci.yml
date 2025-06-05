@@ -35,6 +35,33 @@ jobs:
     - name: Run tests
       run: npm run test:coverage
     
+    - name: Check test coverage threshold
+      run: |
+        if [ -f coverage/coverage-summary.json ]; then
+          echo "Coverage report found, checking thresholds..."
+          node -e "
+            const coverage = require('./coverage/coverage-summary.json');
+            const total = coverage.total;
+            const threshold = 90;
+            
+            console.log('Coverage Summary:');
+            console.log('Lines:', total.lines.pct + '%');
+            console.log('Functions:', total.functions.pct + '%');
+            console.log('Branches:', total.branches.pct + '%');
+            console.log('Statements:', total.statements.pct + '%');
+            
+            if (total.lines.pct < threshold || total.functions.pct < threshold || 
+                total.branches.pct < threshold || total.statements.pct < threshold) {
+              console.error('Coverage threshold of ' + threshold + '% not met!');
+              process.exit(1);
+            }
+            console.log('All coverage thresholds met!');
+          "
+        else
+          echo "No coverage report found"
+          exit 1
+        fi
+    
     - name: Build package
       run: npm run build
     

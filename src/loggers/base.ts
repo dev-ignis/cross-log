@@ -6,14 +6,12 @@ import {
   ILogger, 
   LoggerConfig, 
   LogLevel, 
-  CategoryConfig,
   LogEntry 
 } from '../core/types';
 import { ConfigManager } from '../core/config';
 import { 
   isLoggingEnabled, 
-  formatMessage, 
-  getConsoleMethod 
+  formatMessage
 } from '../core/utils';
 
 export abstract class BaseLogger implements ILogger {
@@ -150,14 +148,14 @@ export abstract class BaseLogger implements ILogger {
     // Check if logging is globally enabled
     if (!config.enabled) return;
 
-    // Check global log level
-    if (!isLoggingEnabled(config.minLevel, level, true)) return;
-
-    // Check category-specific settings
+    // Check category-specific settings first
     if (category && config.categories[category]) {
       const categoryConfig = config.categories[category]!;
       if (!categoryConfig.enabled) return;
       if (!isLoggingEnabled(categoryConfig.minLevel, level, true)) return;
+    } else {
+      // Check global log level only if no category-specific settings
+      if (!isLoggingEnabled(config.minLevel, level, true)) return;
     }
 
     // Check for duplicate logs

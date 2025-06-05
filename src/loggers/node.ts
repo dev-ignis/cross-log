@@ -17,7 +17,7 @@ export class NodeLogger extends BaseLogger {
   protected outputLog(
     level: LogLevel,
     formattedMessage: string,
-    logEntry: LogEntry,
+    _logEntry: LogEntry,
     ...args: unknown[]
   ): void {
     const config = this.configManager.getConfig();

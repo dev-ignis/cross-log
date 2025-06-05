@@ -91,28 +91,28 @@ export interface ILogger {
 export interface LogEntry {
   level: LogLevel;
   message: string;
-  category?: string;
+  category: string | undefined;
   timestamp: Date;
   args: unknown[];
 }
 
 // Environment variable configuration interface
 export interface EnvConfig {
-  LOG_LEVEL?: string;
-  LOGGER_ENABLED?: string;
-  LOGGER_TIMESTAMPS?: string;
-  LOGGER_STACK_TRACES?: string;
-  LOGGER_COLORS?: string;
-  LOGGER_STORAGE_ENABLED?: string;
-  LOGGER_STORAGE_KEY_PREFIX?: string;
-  LOGGER_BROWSER_CONTROLS?: string;
-  LOGGER_WINDOW_NAMESPACE?: string;
-  LOGGER_COLOR_DEBUG?: string;
-  LOGGER_COLOR_INFO?: string;
-  LOGGER_COLOR_WARN?: string;
-  LOGGER_COLOR_ERROR?: string;
-  LOGGER_ANSI_DEBUG?: string;
-  LOGGER_ANSI_INFO?: string;
-  LOGGER_ANSI_WARN?: string;
-  LOGGER_ANSI_ERROR?: string;
+  LOG_LEVEL: string | undefined;
+  LOGGER_ENABLED: string | undefined;
+  LOGGER_TIMESTAMPS: string | undefined;
+  LOGGER_STACK_TRACES: string | undefined;
+  LOGGER_COLORS: string | undefined;
+  LOGGER_STORAGE_ENABLED: string | undefined;
+  LOGGER_STORAGE_KEY_PREFIX: string | undefined;
+  LOGGER_BROWSER_CONTROLS: string | undefined;
+  LOGGER_WINDOW_NAMESPACE: string | undefined;
+  LOGGER_COLOR_DEBUG: string | undefined;
+  LOGGER_COLOR_INFO: string | undefined;
+  LOGGER_COLOR_WARN: string | undefined;
+  LOGGER_COLOR_ERROR: string | undefined;
+  LOGGER_ANSI_DEBUG: string | undefined;
+  LOGGER_ANSI_INFO: string | undefined;
+  LOGGER_ANSI_WARN: string | undefined;
+  LOGGER_ANSI_ERROR: string | undefined;
 }
