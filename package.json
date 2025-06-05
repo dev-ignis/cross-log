@@ -34,11 +34,11 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/dev-ignis/universal-logger.git"
+    "url": "https://github.com/dev-ignis/cross-log.git"
   },
-  "homepage": "https://github.com/dev-ignis/universal-logger#readme",
+  "homepage": "https://github.com/dev-ignis/cross-log#readme",
   "bugs": {
-    "url": "https://github.com/dev-ignis/universal-logger/issues"
+    "url": "https://github.com/dev-ignis/cross-log/issues"
   },
   "engines": {
     "node": ">=14.0.0"
