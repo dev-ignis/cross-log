@@ -6,7 +6,7 @@ export default {
     {
       file: 'dist/index.js',
       format: 'cjs',
-      exports: 'default',
+      exports: 'named',
       sourcemap: true
     },
     {
@@ -18,7 +18,7 @@ export default {
       file: 'dist/index.umd.js',
       format: 'umd',
       name: 'UniversalLogger',
-      exports: 'default',
+      exports: 'named',
       sourcemap: true
     }
   ],
