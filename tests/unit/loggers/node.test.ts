@@ -237,7 +237,8 @@ describe('NodeLogger', () => {
     test('respects minimum log level', () => {
       const logger = new NodeLogger({
         minLevel: LogLevel.WARN,
-        showTimestamp: false
+        showTimestamp: false,
+        colors: { enabled: false, browser: {} as any, ansi: {} as any }
       });
 
       logger.debug('debug message');
@@ -273,7 +274,8 @@ describe('NodeLogger', () => {
     test('supports category-based filtering', () => {
       const logger = new NodeLogger({
         minLevel: LogLevel.WARN,
-        showTimestamp: false
+        showTimestamp: false,
+        colors: { enabled: false, browser: {} as any, ansi: {} as any }
       });
 
       logger.enableCategory('debug-category', LogLevel.DEBUG);
@@ -288,7 +290,10 @@ describe('NodeLogger', () => {
     });
 
     test('can disable specific categories', () => {
-      const logger = new NodeLogger({ showTimestamp: false });
+      const logger = new NodeLogger({ 
+        showTimestamp: false,
+        colors: { enabled: false, browser: {} as any, ansi: {} as any }
+      });
 
       logger.disableCategory('disabled-category');
 

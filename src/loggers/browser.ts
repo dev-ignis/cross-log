@@ -4,7 +4,6 @@
 
 import { BaseLogger } from './base';
 import { LoggerConfig, LogLevel, LogEntry } from '../core/types';
-import { getConsoleMethod } from '../core/utils';
 
 // Window interface extension for TypeScript
 interface WindowWithLogger {
@@ -13,9 +12,26 @@ interface WindowWithLogger {
 
 export class BrowserLogger extends BaseLogger {
   private storageAvailable: boolean;
+  private originalConsole: {
+    debug: typeof console.debug;
+    info: typeof console.info;
+    warn: typeof console.warn;
+    error: typeof console.error;
+    log: typeof console.log;
+  };
 
   constructor(initialConfig?: Partial<LoggerConfig>) {
     super(initialConfig);
+
+    // Store references to original console methods to prevent infinite recursion
+    this.originalConsole = {
+      debug: console.debug.bind(console),
+      info: console.info.bind(console),
+      warn: console.warn.bind(console),
+      error: console.error.bind(console),
+      log: console.log.bind(console)
+    };
+
     this.storageAvailable = this.checkStorageAvailability();
     this.loadConfigFromStorage();
     this.setupBrowserControls();
@@ -31,14 +47,17 @@ export class BrowserLogger extends BaseLogger {
     ...args: unknown[]
   ): void {
     const config = this.configManager.getConfig();
-    const consoleMethod = getConsoleMethod(level);
+
+    // Get the original console method to avoid infinite recursion
+    // when logger methods are used to replace console methods
+    const originalConsole = this.getOriginalConsoleMethod(level);
 
     if (config.colors.enabled) {
       const color = this.getColorForLevel(level);
       const style = `color: ${color}; font-weight: bold`;
-      consoleMethod(`%c${formattedMessage}`, style, ...args);
+      originalConsole(`%c${formattedMessage}`, style, ...args);
     } else {
-      consoleMethod(formattedMessage, ...args);
+      originalConsole(formattedMessage, ...args);
     }
   }
 
@@ -47,7 +66,9 @@ export class BrowserLogger extends BaseLogger {
    */
   protected outputStackTrace(error: Error): void {
     if (error.stack) {
-      console.error(error.stack);
+      // Use original console.error to avoid infinite recursion
+      const originalError = this.getOriginalConsoleMethod(LogLevel.ERROR);
+      originalError(error.stack);
     }
   }
 
@@ -97,6 +118,24 @@ export class BrowserLogger extends BaseLogger {
   disableAll(): void {
     super.disableAll();
     this.saveConfigToStorage();
+  }
+
+  /**
+   * Get original console method to avoid infinite recursion
+   */
+  private getOriginalConsoleMethod(level: LogLevel): (message?: unknown, ...optionalParams: unknown[]) => void {
+    switch (level) {
+      case LogLevel.DEBUG:
+        return this.originalConsole.debug;
+      case LogLevel.INFO:
+        return this.originalConsole.info;
+      case LogLevel.WARN:
+        return this.originalConsole.warn;
+      case LogLevel.ERROR:
+        return this.originalConsole.error;
+      default:
+        return this.originalConsole.log;
+    }
   }
 
   /**

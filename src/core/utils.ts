@@ -10,8 +10,14 @@ import { LogLevel, Environment } from './types';
 export function detectEnvironment(): Environment {
   const isBrowser = typeof window !== 'undefined';
   const isNode = !isBrowser && typeof process !== 'undefined';
-  const isDevelopment = typeof process !== 'undefined' && process.env.NODE_ENV !== 'production';
-  const isProduction = !isDevelopment;
+
+  // Check for production environment
+  let isProduction = false;
+  if (typeof process !== 'undefined' && process.env && typeof process.env === 'object') {
+    isProduction = process.env.NODE_ENV === 'production';
+  }
+
+  const isDevelopment = !isProduction;
 
   return {
     isBrowser,
@@ -59,7 +65,7 @@ export function parseEnvInt(value: string | undefined, defaultValue: number): nu
  * Get environment variable with fallback
  */
 export function getEnvVar(key: string, defaultValue?: string): string | undefined {
-  if (typeof process !== 'undefined' && process.env) {
+  if (typeof process !== 'undefined' && process.env && typeof process.env === 'object') {
     return process.env[key] || defaultValue;
   }
   return defaultValue;

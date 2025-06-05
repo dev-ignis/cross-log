@@ -27,7 +27,12 @@ jest.mock('../../src/core/utils', () => {
   const actual = jest.requireActual('../../src/core/utils');
   return {
     ...actual,
-    detectEnvironment: jest.fn()
+    detectEnvironment: jest.fn(() => ({
+      isBrowser: false,
+      isNode: true,
+      isDevelopment: true,
+      isProduction: false
+    }))
   };
 });
 
@@ -38,6 +43,13 @@ const mockDetectEnvironment = detectEnvironment as jest.MockedFunction<typeof de
 describe('Universal Logger Index', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    // Set up default mock for detectEnvironment
+    mockDetectEnvironment.mockReturnValue({
+      isBrowser: false,
+      isNode: true,
+      isDevelopment: true,
+      isProduction: false
+    });
   });
 
   describe('createLogger', () => {
@@ -220,15 +232,14 @@ describe('Universal Logger Index', () => {
       expect(config).toBeDefined();
     });
 
-    test('default logger methods work when destructured', () => {
-      const { debug: debugMethod, isEnabled: isEnabledMethod } = logger;
+    test('bound methods work when destructured', () => {
+      // Test the bound methods exported from index
+      expect(typeof debug).toBe('function');
+      expect(typeof isEnabled).toBe('function');
       
-      expect(typeof debugMethod).toBe('function');
-      expect(typeof isEnabledMethod).toBe('function');
-      
-      // These should not throw when called without context
-      const enabled = isEnabledMethod();
-      expect(typeof enabled).toBe('boolean');
+      // These should work because they're pre-bound to the default logger
+      expect(() => debug('test')).not.toThrow();
+      expect(typeof isEnabled()).toBe('boolean');
     });
   });
 

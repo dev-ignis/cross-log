@@ -181,8 +181,19 @@ export abstract class BaseLogger implements ILogger {
     this.outputLog(level, formattedMessage, logEntry, ...args);
 
     // Handle error stack traces
-    if (level === LogLevel.ERROR && message instanceof Error && config.includeStackTrace) {
-      this.outputStackTrace(message);
+    if (level === LogLevel.ERROR && config.includeStackTrace) {
+      // Check if message is an Error
+      if (message instanceof Error) {
+        this.outputStackTrace(message);
+      } else {
+        // Check if any of the arguments is an Error
+        for (const arg of args) {
+          if (arg instanceof Error) {
+            this.outputStackTrace(arg);
+            break; // Only output the first error's stack trace
+          }
+        }
+      }
     }
   }
 

@@ -2,18 +2,17 @@
  * Configuration manager with environment-based defaults
  */
 
-import { 
-  LoggerConfig, 
-  LogLevel, 
+import {
+  LoggerConfig,
+  LogLevel,
   Environment,
-  EnvConfig 
+  EnvConfig
 } from './types';
-import { 
-  detectEnvironment, 
-  parseLogLevel, 
-  parseEnvBoolean, 
-  parseEnvInt, 
-  getEnvVar 
+import {
+  detectEnvironment,
+  parseLogLevel,
+  parseEnvBoolean,
+  getEnvVar
 } from './utils';
 
 export class ConfigManager {
@@ -44,45 +43,163 @@ export class ConfigManager {
    */
   private mergeWithDefaults(userConfig?: Partial<LoggerConfig>): LoggerConfig {
     const envConfig = this.getEnvConfig();
-    
-    const defaults: LoggerConfig = {
-      enabled: parseEnvBoolean(envConfig.LOGGER_ENABLED, true),
-      minLevel: this.getDefaultLogLevel(envConfig),
-      showTimestamp: parseEnvBoolean(envConfig.LOGGER_TIMESTAMPS, true),
-      includeStackTrace: parseEnvBoolean(envConfig.LOGGER_STACK_TRACES, true),
+
+    // Base defaults without environment variables
+    const baseDefaults: LoggerConfig = {
+      enabled: true,
+      minLevel: this.environment.isDevelopment ? LogLevel.DEBUG : LogLevel.WARN,
+      showTimestamp: true,
+      includeStackTrace: true,
       categories: {},
       colors: {
-        enabled: parseEnvBoolean(envConfig.LOGGER_COLORS, this.getDefaultColorsEnabled()),
+        enabled: this.getDefaultColorsEnabled(),
         browser: {
-          debug: envConfig.LOGGER_COLOR_DEBUG || '#6EC1E4',
-          info: envConfig.LOGGER_COLOR_INFO || '#4A9FCA',
-          warn: envConfig.LOGGER_COLOR_WARN || '#FBC02D',
-          error: envConfig.LOGGER_COLOR_ERROR || '#D67C2A'
+          debug: '#6EC1E4',
+          info: '#4A9FCA',
+          warn: '#FBC02D',
+          error: '#D67C2A'
         },
         ansi: {
-          debug: parseEnvInt(envConfig.LOGGER_ANSI_DEBUG, 36),
-          info: parseEnvInt(envConfig.LOGGER_ANSI_INFO, 36),
-          warn: parseEnvInt(envConfig.LOGGER_ANSI_WARN, 33),
-          error: parseEnvInt(envConfig.LOGGER_ANSI_ERROR, 31)
+          debug: 36,
+          info: 36,
+          warn: 33,
+          error: 31
         }
       },
       storage: {
-        enabled: parseEnvBoolean(
-          envConfig.LOGGER_STORAGE_ENABLED, 
-          this.environment.isBrowser
-        ),
-        keyPrefix: envConfig.LOGGER_STORAGE_KEY_PREFIX || 'universal_logger'
+        enabled: this.environment.isBrowser,
+        keyPrefix: 'universal_logger'
       },
       browserControls: {
-        enabled: parseEnvBoolean(
-          envConfig.LOGGER_BROWSER_CONTROLS,
-          this.environment.isBrowser && this.environment.isDevelopment
-        ),
-        windowNamespace: envConfig.LOGGER_WINDOW_NAMESPACE || '__universalLogger'
+        enabled: this.environment.isBrowser && this.environment.isDevelopment,
+        windowNamespace: '__universalLogger'
       }
     };
 
-    return { ...defaults, ...userConfig };
+    // Environment variable overrides
+    const envOverrides: Partial<LoggerConfig> = {};
+
+    if (envConfig.LOGGER_ENABLED !== undefined) {
+      envOverrides.enabled = parseEnvBoolean(envConfig.LOGGER_ENABLED, true);
+    }
+
+    if (envConfig.LOG_LEVEL !== undefined) {
+      const envLevel = parseLogLevel(envConfig.LOG_LEVEL);
+      if (envLevel !== null) {
+        envOverrides.minLevel = envLevel;
+      }
+    }
+
+    if (envConfig.LOGGER_TIMESTAMPS !== undefined) {
+      envOverrides.showTimestamp = parseEnvBoolean(envConfig.LOGGER_TIMESTAMPS, true);
+    }
+
+    if (envConfig.LOGGER_STACK_TRACES !== undefined) {
+      envOverrides.includeStackTrace = parseEnvBoolean(envConfig.LOGGER_STACK_TRACES, true);
+    }
+
+    // Handle colors configuration
+    const colorsOverride: any = {};
+    let hasColorOverrides = false;
+
+    if (envConfig.LOGGER_COLORS !== undefined) {
+      colorsOverride.enabled = parseEnvBoolean(envConfig.LOGGER_COLORS, this.getDefaultColorsEnabled());
+      hasColorOverrides = true;
+    }
+
+    // Browser color overrides
+    const browserColors: any = {};
+    let hasBrowserColorOverrides = false;
+    if (envConfig.LOGGER_COLOR_DEBUG) {
+      browserColors.debug = envConfig.LOGGER_COLOR_DEBUG;
+      hasBrowserColorOverrides = true;
+    }
+    if (envConfig.LOGGER_COLOR_INFO) {
+      browserColors.info = envConfig.LOGGER_COLOR_INFO;
+      hasBrowserColorOverrides = true;
+    }
+    if (envConfig.LOGGER_COLOR_WARN) {
+      browserColors.warn = envConfig.LOGGER_COLOR_WARN;
+      hasBrowserColorOverrides = true;
+    }
+    if (envConfig.LOGGER_COLOR_ERROR) {
+      browserColors.error = envConfig.LOGGER_COLOR_ERROR;
+      hasBrowserColorOverrides = true;
+    }
+
+    // ANSI color overrides
+    const ansiColors: any = {};
+    let hasAnsiColorOverrides = false;
+    if (envConfig.LOGGER_ANSI_DEBUG) {
+      const parsed = parseInt(envConfig.LOGGER_ANSI_DEBUG, 10);
+      if (!isNaN(parsed)) {
+        ansiColors.debug = parsed;
+        hasAnsiColorOverrides = true;
+      }
+    }
+    if (envConfig.LOGGER_ANSI_INFO) {
+      const parsed = parseInt(envConfig.LOGGER_ANSI_INFO, 10);
+      if (!isNaN(parsed)) {
+        ansiColors.info = parsed;
+        hasAnsiColorOverrides = true;
+      }
+    }
+    if (envConfig.LOGGER_ANSI_WARN) {
+      const parsed = parseInt(envConfig.LOGGER_ANSI_WARN, 10);
+      if (!isNaN(parsed)) {
+        ansiColors.warn = parsed;
+        hasAnsiColorOverrides = true;
+      }
+    }
+    if (envConfig.LOGGER_ANSI_ERROR) {
+      const parsed = parseInt(envConfig.LOGGER_ANSI_ERROR, 10);
+      if (!isNaN(parsed)) {
+        ansiColors.error = parsed;
+        hasAnsiColorOverrides = true;
+      }
+    }
+
+    if (hasColorOverrides || hasBrowserColorOverrides || hasAnsiColorOverrides) {
+      envOverrides.colors = {
+        ...baseDefaults.colors,
+        ...colorsOverride,
+        browser: hasBrowserColorOverrides ? { ...baseDefaults.colors.browser, ...browserColors } : baseDefaults.colors.browser,
+        ansi: hasAnsiColorOverrides ? { ...baseDefaults.colors.ansi, ...ansiColors } : baseDefaults.colors.ansi
+      };
+    }
+
+    // Storage overrides
+    const storageOverride: any = {};
+    let hasStorageOverrides = false;
+    if (envConfig.LOGGER_STORAGE_ENABLED !== undefined) {
+      storageOverride.enabled = parseEnvBoolean(envConfig.LOGGER_STORAGE_ENABLED, this.environment.isBrowser);
+      hasStorageOverrides = true;
+    }
+    if (envConfig.LOGGER_STORAGE_KEY_PREFIX) {
+      storageOverride.keyPrefix = envConfig.LOGGER_STORAGE_KEY_PREFIX;
+      hasStorageOverrides = true;
+    }
+    if (hasStorageOverrides) {
+      envOverrides.storage = { ...baseDefaults.storage, ...storageOverride };
+    }
+
+    // Browser controls overrides
+    const browserControlsOverride: any = {};
+    let hasBrowserControlsOverrides = false;
+    if (envConfig.LOGGER_BROWSER_CONTROLS !== undefined) {
+      browserControlsOverride.enabled = parseEnvBoolean(envConfig.LOGGER_BROWSER_CONTROLS, this.environment.isBrowser && this.environment.isDevelopment);
+      hasBrowserControlsOverrides = true;
+    }
+    if (envConfig.LOGGER_WINDOW_NAMESPACE) {
+      browserControlsOverride.windowNamespace = envConfig.LOGGER_WINDOW_NAMESPACE;
+      hasBrowserControlsOverrides = true;
+    }
+    if (hasBrowserControlsOverrides) {
+      envOverrides.browserControls = { ...baseDefaults.browserControls, ...browserControlsOverride };
+    }
+
+    // Merge: base defaults < user config < environment variables
+    return { ...baseDefaults, ...userConfig, ...envOverrides };
   }
 
   /**
@@ -110,18 +227,7 @@ export class ConfigManager {
     };
   }
 
-  /**
-   * Get default log level based on environment
-   */
-  private getDefaultLogLevel(envConfig: EnvConfig): LogLevel {
-    const envLevel = parseLogLevel(envConfig.LOG_LEVEL);
-    if (envLevel !== null) {
-      return envLevel;
-    }
 
-    // Smart default: DEBUG in development, WARN in production
-    return this.environment.isDevelopment ? LogLevel.DEBUG : LogLevel.WARN;
-  }
 
   /**
    * Get default colors enabled setting

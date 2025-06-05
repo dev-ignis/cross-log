@@ -2,7 +2,7 @@
  * Integration tests for cross-environment compatibility
  */
 
-import { createLogger, BrowserLogger, NodeLogger, LogLevel } from '../../src/index';
+import { createLogger, LogLevel } from '../../src/index';
 
 // Mock console methods
 const mockConsole = {
@@ -33,13 +33,13 @@ describe('Cross-Environment Integration', () => {
     test('same API works in both environments', () => {
       // Test in browser environment
       global.window = { localStorage: {} } as any;
-      global.process = { env: { NODE_ENV: 'development' } } as any;
-      
+      global.process = { env: { NODE_ENV: 'development' }, cwd: () => '/test' } as any;
+
       const browserLogger = createLogger({ showTimestamp: false });
-      
+
       // Test in Node.js environment
       delete (global as any).window;
-      global.process = { env: { NODE_ENV: 'development' } } as any;
+      global.process = { env: { NODE_ENV: 'development' }, cwd: () => '/test' } as any;
       
       const nodeLogger = createLogger({ showTimestamp: false });
 
@@ -89,12 +89,12 @@ describe('Cross-Environment Integration', () => {
         { showTimestamp: false, enabled: false }
       ];
 
-      configs.forEach((config, index) => {
+      configs.forEach((config) => {
         jest.clearAllMocks();
 
         // Browser environment
         global.window = { localStorage: {} } as any;
-        global.process = { env: { NODE_ENV: 'development' } } as any;
+        global.process = { env: { NODE_ENV: 'development' }, cwd: () => '/test' } as any;
         const browserLogger = createLogger(config);
 
         browserLogger.debug('Debug message');
@@ -113,7 +113,7 @@ describe('Cross-Environment Integration', () => {
 
         // Node.js environment
         delete (global as any).window;
-        global.process = { env: { NODE_ENV: 'development' } } as any;
+        global.process = { env: { NODE_ENV: 'development' }, cwd: () => '/test' } as any;
         const nodeLogger = createLogger(config);
 
         nodeLogger.debug('Debug message');
@@ -147,12 +147,12 @@ describe('Cross-Environment Integration', () => {
 
       // Browser
       global.window = { localStorage: {} } as any;
-      global.process = { env: { NODE_ENV: 'development' } } as any;
+      global.process = { env: { NODE_ENV: 'development' }, cwd: () => '/test' } as any;
       const browserLogger = createLogger(sharedConfig);
 
       // Node.js
       delete (global as any).window;
-      global.process = { env: { NODE_ENV: 'development' } } as any;
+      global.process = { env: { NODE_ENV: 'development' }, cwd: () => '/test' } as any;
       const nodeLogger = createLogger(sharedConfig);
 
       const browserConfig = browserLogger.getConfig();
@@ -167,13 +167,13 @@ describe('Cross-Environment Integration', () => {
     test('environment-specific defaults are respected', () => {
       // Browser environment
       global.window = { localStorage: {} } as any;
-      global.process = { env: { NODE_ENV: 'development' } } as any;
+      global.process = { env: { NODE_ENV: 'development' }, cwd: () => '/test' } as any;
       const browserLogger = createLogger();
       const browserConfig = browserLogger.getConfig();
 
-      // Node.js environment  
+      // Node.js environment
       delete (global as any).window;
-      global.process = { env: { NODE_ENV: 'development' } } as any;
+      global.process = { env: { NODE_ENV: 'development' }, cwd: () => '/test' } as any;
       const nodeLogger = createLogger();
       const nodeConfig = nodeLogger.getConfig();
 
@@ -204,13 +204,13 @@ describe('Cross-Environment Integration', () => {
 
       // Browser environment
       global.window = { localStorage: {} } as any;
-      global.process = { env: testEnv } as any;
+      global.process = { env: testEnv, cwd: () => '/test' } as any;
       const browserLogger = createLogger();
       const browserConfig = browserLogger.getConfig();
 
       // Node.js environment
       delete (global as any).window;
-      global.process = { env: testEnv } as any;
+      global.process = { env: testEnv, cwd: () => '/test' } as any;
       const nodeLogger = createLogger();
       const nodeConfig = nodeLogger.getConfig();
 
@@ -229,12 +229,12 @@ describe('Cross-Environment Integration', () => {
     test('can replace console.log in both environments', () => {
       const environments = [
         // Browser
-        { window: { localStorage: {} }, process: { env: { NODE_ENV: 'development' } } },
+        { window: { localStorage: {} }, process: { env: { NODE_ENV: 'development' }, cwd: () => '/test' } },
         // Node.js
-        { window: undefined, process: { env: { NODE_ENV: 'development' } } }
+        { window: undefined, process: { env: { NODE_ENV: 'development' }, cwd: () => '/test' } }
       ];
 
-      environments.forEach((env, index) => {
+      environments.forEach((env) => {
         jest.clearAllMocks();
 
         if (env.window) {
@@ -259,8 +259,26 @@ describe('Cross-Environment Integration', () => {
         console.log = originalLog;
         console.error = originalError;
 
-        expect(mockConsole.info).toHaveBeenCalledWith('Replaced log message');
-        expect(mockConsole.error).toHaveBeenCalledWith('Replaced error message');
+        // Check if we're in browser environment (has window) or Node.js
+        if (env.window) {
+          // Browser environment - expect styled output
+          expect(mockConsole.info).toHaveBeenCalledWith(
+            '%cReplaced log message',
+            'color: #4A9FCA; font-weight: bold'
+          );
+          expect(mockConsole.error).toHaveBeenCalledWith(
+            '%cReplaced error message',
+            'color: #D67C2A; font-weight: bold'
+          );
+        } else {
+          // Node.js environment - expect ANSI colored output
+          expect(mockConsole.info).toHaveBeenCalledWith(
+            expect.stringContaining('Replaced log message')
+          );
+          expect(mockConsole.error).toHaveBeenCalledWith(
+            expect.stringContaining('Replaced error message')
+          );
+        }
       });
     });
 
@@ -272,7 +290,7 @@ describe('Cross-Environment Integration', () => {
         },
         () => {
           const logger = createLogger({ showTimestamp: false });
-          logger.error('Error with context', { userId: 123, action: 'login' });
+          logger.error('Error with context', undefined, { userId: 123, action: 'login' });
         },
         () => {
           const logger = createLogger({ showTimestamp: false });
@@ -281,8 +299,8 @@ describe('Cross-Environment Integration', () => {
       ];
 
       const environments = [
-        { window: { localStorage: {} }, process: { env: { NODE_ENV: 'development' } } },
-        { window: undefined, process: { env: { NODE_ENV: 'development' } } }
+        { window: { localStorage: {} }, process: { env: { NODE_ENV: 'development' }, cwd: () => '/test' } },
+        { window: undefined, process: { env: { NODE_ENV: 'development' }, cwd: () => '/test' } }
       ];
 
       environments.forEach(env => {
@@ -305,8 +323,8 @@ describe('Cross-Environment Integration', () => {
   describe('TypeScript compatibility', () => {
     test('maintains type safety across environments', () => {
       const environments = [
-        { window: { localStorage: {} }, process: { env: { NODE_ENV: 'development' } } },
-        { window: undefined, process: { env: { NODE_ENV: 'development' } } }
+        { window: { localStorage: {} }, process: { env: { NODE_ENV: 'development' }, cwd: () => '/test' } },
+        { window: undefined, process: { env: { NODE_ENV: 'development' }, cwd: () => '/test' } }
       ];
 
       environments.forEach(env => {
@@ -338,8 +356,8 @@ describe('Cross-Environment Integration', () => {
   describe('error handling consistency', () => {
     test('handles errors consistently across environments', () => {
       const environments = [
-        { window: { localStorage: {} }, process: { env: { NODE_ENV: 'development' } } },
-        { window: undefined, process: { env: { NODE_ENV: 'development' } } }
+        { window: { localStorage: {} }, process: { env: { NODE_ENV: 'development' }, cwd: () => '/test' } },
+        { window: undefined, process: { env: { NODE_ENV: 'development' }, cwd: () => '/test' } }
       ];
 
       environments.forEach(env => {
@@ -359,7 +377,19 @@ describe('Cross-Environment Integration', () => {
 
         logger.error(error);
 
-        expect(mockConsole.error).toHaveBeenCalledWith('Test error');
+        // Check if we're in browser environment (has window) or Node.js
+        if (env.window) {
+          // Browser environment - expect styled output
+          expect(mockConsole.error).toHaveBeenCalledWith(
+            '%cTest error',
+            'color: #D67C2A; font-weight: bold'
+          );
+        } else {
+          // Node.js environment - expect ANSI colored output
+          expect(mockConsole.error).toHaveBeenCalledWith(
+            expect.stringContaining('Test error')
+          );
+        }
         expect(mockConsole.error).toHaveBeenCalledWith(error.stack);
       });
     });
@@ -368,8 +398,8 @@ describe('Cross-Environment Integration', () => {
   describe('performance consistency', () => {
     test('disabled logging performs consistently', () => {
       const environments = [
-        { window: { localStorage: {} }, process: { env: { NODE_ENV: 'development' } } },
-        { window: undefined, process: { env: { NODE_ENV: 'development' } } }
+        { window: { localStorage: {} }, process: { env: { NODE_ENV: 'development' }, cwd: () => '/test' } },
+        { window: undefined, process: { env: { NODE_ENV: 'development' }, cwd: () => '/test' } }
       ];
 
       environments.forEach(env => {

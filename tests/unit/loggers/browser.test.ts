@@ -279,11 +279,13 @@ describe('BrowserLogger', () => {
     });
 
     test('handles localStorage save errors gracefully', () => {
+      // Create logger first with working localStorage
+      const logger = new BrowserLogger();
+      
+      // Then break setItem to trigger error during save
       mockLocalStorage.setItem.mockImplementation(() => {
         throw new Error('Storage full');
       });
-
-      const logger = new BrowserLogger();
       
       expect(() => logger.configure({ enabled: false })).not.toThrow();
       expect(mockConsole.error).toHaveBeenCalledWith(
@@ -293,13 +295,26 @@ describe('BrowserLogger', () => {
     });
 
     test('skips localStorage when disabled', () => {
+      // Mock to prevent storage availability check calls
+      const mockWindow = {
+        localStorage: {
+          getItem: jest.fn().mockReturnValue(null),
+          setItem: jest.fn(),
+          removeItem: jest.fn()
+        }
+      };
+      global.window = mockWindow as any;
+      
       const logger = new BrowserLogger({
         storage: { enabled: false, keyPrefix: 'test' }
       });
       
+      // Clear calls from constructor and availability check
+      jest.clearAllMocks();
+      
       logger.configure({ enabled: false });
 
-      expect(mockLocalStorage.setItem).not.toHaveBeenCalled();
+      expect(mockWindow.localStorage.setItem).not.toHaveBeenCalled();
     });
   });
 
@@ -329,7 +344,7 @@ describe('BrowserLogger', () => {
       } as any;
       global.window = mockWindow;
 
-      const logger = new BrowserLogger({
+      new BrowserLogger({
         browserControls: {
           enabled: true,
           windowNamespace: '__testLogger'
@@ -351,7 +366,7 @@ describe('BrowserLogger', () => {
       } as any;
       global.window = mockWindow;
 
-      const logger = new BrowserLogger({
+      new BrowserLogger({
         browserControls: {
           enabled: true,
           windowNamespace: '__testLogger'
@@ -373,7 +388,7 @@ describe('BrowserLogger', () => {
       } as any;
       global.window = mockWindow;
 
-      const logger = new BrowserLogger({
+      new BrowserLogger({
         browserControls: {
           enabled: true,
           windowNamespace: '__testLogger'

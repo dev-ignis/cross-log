@@ -4,11 +4,28 @@
 
 import { BaseLogger } from './base';
 import { LoggerConfig, LogLevel, LogEntry } from '../core/types';
-import { getConsoleMethod, createAnsiColor, resetAnsiColor } from '../core/utils';
+import { createAnsiColor, resetAnsiColor } from '../core/utils';
 
 export class NodeLogger extends BaseLogger {
+  private originalConsole: {
+    debug: typeof console.debug;
+    info: typeof console.info;
+    warn: typeof console.warn;
+    error: typeof console.error;
+    log: typeof console.log;
+  };
+
   constructor(initialConfig?: Partial<LoggerConfig>) {
     super(initialConfig);
+
+    // Store references to original console methods to prevent infinite recursion
+    this.originalConsole = {
+      debug: console.debug.bind(console),
+      info: console.info.bind(console),
+      warn: console.warn.bind(console),
+      error: console.error.bind(console),
+      log: console.log.bind(console)
+    };
   }
 
   /**
@@ -21,15 +38,18 @@ export class NodeLogger extends BaseLogger {
     ...args: unknown[]
   ): void {
     const config = this.configManager.getConfig();
-    const consoleMethod = getConsoleMethod(level);
+
+    // Get the original console method to avoid infinite recursion
+    // when logger methods are used to replace console methods
+    const originalConsole = this.getOriginalConsoleMethod(level);
 
     if (config.colors.enabled) {
       const colorCode = this.getAnsiColorForLevel(level);
       const colorStart = createAnsiColor(colorCode);
       const colorEnd = resetAnsiColor();
-      consoleMethod(`${colorStart}${formattedMessage}${colorEnd}`, ...args);
+      originalConsole(`${colorStart}${formattedMessage}${colorEnd}`, ...args);
     } else {
-      consoleMethod(formattedMessage, ...args);
+      originalConsole(formattedMessage, ...args);
     }
   }
 
@@ -38,7 +58,27 @@ export class NodeLogger extends BaseLogger {
    */
   protected outputStackTrace(error: Error): void {
     if (error.stack) {
-      console.error(error.stack);
+      // Use original console.error to avoid infinite recursion
+      const originalError = this.getOriginalConsoleMethod(LogLevel.ERROR);
+      originalError(error.stack);
+    }
+  }
+
+  /**
+   * Get original console method to avoid infinite recursion
+   */
+  private getOriginalConsoleMethod(level: LogLevel): (message?: unknown, ...optionalParams: unknown[]) => void {
+    switch (level) {
+      case LogLevel.DEBUG:
+        return this.originalConsole.debug;
+      case LogLevel.INFO:
+        return this.originalConsole.info;
+      case LogLevel.WARN:
+        return this.originalConsole.warn;
+      case LogLevel.ERROR:
+        return this.originalConsole.error;
+      default:
+        return this.originalConsole.log;
     }
   }
 
