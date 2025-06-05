@@ -4,7 +4,7 @@ A universal logging package that works seamlessly in both browser and Node.js en
 
 [![npm version](https://badge.fury.io/js/cross-log.svg)](https://badge.fury.io/js/cross-log)
 [![CI](https://github.com/dev-ignis/cross-log/workflows/CI/badge.svg)](https://github.com/dev-ignis/cross-log/actions)
-[![Coverage Status](https://coveralls.io/repos/github/dev-ignis/cross-log/badge.svg?branch=master)](https://coveralls.io/github/dev-ignis/cross-log?branch=master)
+[![Coverage Status](https://coveralls.io/repos/github/dev-ignis/cross-log/badge.svg?branch=main)](https://coveralls.io/github/dev-ignis/cross-log?branch=main)
 [![TypeScript](https://img.shields.io/badge/TypeScript-ready-blue.svg)](https://www.typescriptlang.org)
 
 ## ✨ Features
