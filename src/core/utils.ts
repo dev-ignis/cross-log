@@ -4,6 +4,7 @@
 
 import { LogLevel, Environment } from './types';
 
+
 /**
  * Detect the current environment
  */
@@ -164,7 +165,8 @@ export function debounce<T extends (...args: unknown[]) => void>(
   func: T,
   wait: number
 ): (...args: Parameters<T>) => void {
-  let timeout: NodeJS.Timeout | number | undefined;
+  // Use a more generic timeout type that works in both browser and Node environments
+  let timeout: ReturnType<typeof setTimeout> | undefined;
   
   return (...args: Parameters<T>) => {
     const later = () => {
