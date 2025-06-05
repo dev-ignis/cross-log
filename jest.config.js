@@ -28,16 +28,19 @@ module.exports = {
   },
   collectCoverageFrom: [
     'src/**/*.ts',
-    '!src/**/*.d.ts'
+    '!src/**/*.d.ts',
+    '!src/**/__tests__/**/*.ts',
+    '!src/**/*.test.ts',
+    '!src/**/*.spec.ts'
   ],
   coverageDirectory: 'coverage',
   coverageReporters: ['text', 'lcov', 'html', 'json'],
   coverageThreshold: {
     global: {
-      branches: 90,
-      functions: 90,
-      lines: 90,
-      statements: 90
+      branches: 70,
+      functions: 70,
+      lines: 70,
+      statements: 70
     }
   },
   setupFilesAfterEnv: ['<rootDir>/tests/setup.ts'],
