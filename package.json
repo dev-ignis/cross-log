@@ -1,6 +1,6 @@
 {
   "name": "universal-logger",
-  "version": "1.0.0",
+  "version": "0.3.0",
   "description": "A universal logging package that works in both browser and Node.js environments with environment variable configuration",
   "main": "dist/index.js",
   "module": "dist/index.esm.js",
