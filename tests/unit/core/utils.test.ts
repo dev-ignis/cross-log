@@ -30,7 +30,7 @@ describe('Core Utils', () => {
     });
 
     test('detects browser environment', () => {
-      global.window = {} as any;
+      global.window = { document: {} } as any;
       delete (global as any).process;
 
       const env = detectEnvironment();
@@ -40,7 +40,10 @@ describe('Core Utils', () => {
 
     test('detects Node.js environment', () => {
       delete (global as any).window;
-      global.process = { env: { NODE_ENV: 'development' } } as any;
+      global.process = { 
+        env: { NODE_ENV: 'development' },
+        versions: { node: '16.0.0' }
+      } as any;
 
       const env = detectEnvironment();
       expect(env.isBrowser).toBe(false);
@@ -51,7 +54,10 @@ describe('Core Utils', () => {
 
     test('detects production environment', () => {
       delete (global as any).window;
-      global.process = { env: { NODE_ENV: 'production' } } as any;
+      global.process = { 
+        env: { NODE_ENV: 'production' },
+        versions: { node: '16.0.0' }
+      } as any;
 
       const env = detectEnvironment();
       expect(env.isDevelopment).toBe(false);

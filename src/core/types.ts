@@ -68,6 +68,7 @@ export interface Environment {
   isNode: boolean;
   isDevelopment: boolean;
   isProduction: boolean;
+  runtime?: string;
 }
 
 // Logger interface that both browser and node loggers implement

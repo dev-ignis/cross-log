@@ -103,3 +103,10 @@ export class NodeLogger extends BaseLogger {
     }
   }
 }
+
+/**
+ * Factory function to create a node logger instance
+ */
+export function createLogger(config?: Partial<LoggerConfig>): NodeLogger {
+  return new NodeLogger(config);
+}

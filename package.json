@@ -5,8 +5,44 @@
   "main": "dist/index.js",
   "module": "dist/index.esm.js",
   "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.esm.js",
+      "require": "./dist/index.js",
+      "default": "./dist/index.js"
+    },
+    "./edge": {
+      "types": "./dist/adapters/edge.d.ts",
+      "import": "./dist/adapters/edge.esm.js",
+      "require": "./dist/adapters/edge.js",
+      "default": "./dist/adapters/edge.js"
+    },
+    "./next": {
+      "types": "./dist/adapters/next.d.ts",
+      "import": "./dist/adapters/next.esm.js",
+      "require": "./dist/adapters/next.js",
+      "default": "./dist/adapters/next.js"
+    },
+    "./node": {
+      "types": "./dist/adapters/node.d.ts",
+      "import": "./dist/adapters/node.esm.js",
+      "require": "./dist/adapters/node.js",
+      "default": "./dist/adapters/node.js"
+    },
+    "./browser": {
+      "types": "./dist/adapters/browser.d.ts",
+      "import": "./dist/adapters/browser.esm.js",
+      "require": "./dist/adapters/browser.js",
+      "default": "./dist/adapters/browser.js"
+    }
+  },
   "files": [
-    "dist"
+    "dist",
+    "edge",
+    "next",
+    "node",
+    "browser"
   ],
   "scripts": {
     "build": "rollup -c --bundleConfigAsCjs",

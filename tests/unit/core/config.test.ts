@@ -52,7 +52,7 @@ describe('ConfigManager', () => {
     });
 
     test('creates default config for browser environment', () => {
-      global.window = {} as any;
+      global.window = { document: {} } as any;
       process.env.NODE_ENV = 'development';
 
       const configManager = new ConfigManager();

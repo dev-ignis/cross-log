@@ -22,68 +22,50 @@ import logger, {
   LogLevel
 } from '../../src/index';
 
-// Mock the environment detection
-jest.mock('../../src/core/utils', () => {
-  const actual = jest.requireActual('../../src/core/utils');
+// Mock the runtime detection
+jest.mock('../../src/core/environment', () => {
+  const actual = jest.requireActual('../../src/core/environment');
   return {
     ...actual,
-    detectEnvironment: jest.fn(() => ({
-      isBrowser: false,
-      isNode: true,
-      isDevelopment: true,
-      isProduction: false
-    }))
+    detectRuntimeType: jest.fn(() => 'node'),
+    RuntimeType: {
+      BROWSER: 'browser',
+      NODE: 'node',
+      EDGE: 'edge',
+      DENO: 'deno',
+      BUN: 'bun',
+      UNKNOWN: 'unknown'
+    }
   };
 });
 
-import { detectEnvironment } from '../../src/core/utils';
+import { detectRuntimeType, RuntimeType } from '../../src/core/environment';
 
-const mockDetectEnvironment = detectEnvironment as jest.MockedFunction<typeof detectEnvironment>;
+const mockDetectRuntimeType = detectRuntimeType as jest.MockedFunction<typeof detectRuntimeType>;
 
 describe('Universal Logger Index', () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    // Set up default mock for detectEnvironment
-    mockDetectEnvironment.mockReturnValue({
-      isBrowser: false,
-      isNode: true,
-      isDevelopment: true,
-      isProduction: false
-    });
+    // Set up default mock for runtime detection
+    mockDetectRuntimeType.mockReturnValue(RuntimeType.NODE);
   });
 
   describe('createLogger', () => {
     test('creates BrowserLogger for browser environment', () => {
-      mockDetectEnvironment.mockReturnValue({
-        isBrowser: true,
-        isNode: false,
-        isDevelopment: true,
-        isProduction: false
-      });
+      mockDetectRuntimeType.mockReturnValue(RuntimeType.BROWSER);
 
       const loggerInstance = createLogger();
       expect(loggerInstance).toBeInstanceOf(BrowserLogger);
     });
 
     test('creates NodeLogger for Node.js environment', () => {
-      mockDetectEnvironment.mockReturnValue({
-        isBrowser: false,
-        isNode: true,
-        isDevelopment: true,
-        isProduction: false
-      });
-
+      mockDetectRuntimeType.mockReturnValue(RuntimeType.NODE);
       const loggerInstance = createLogger();
       expect(loggerInstance).toBeInstanceOf(NodeLogger);
     });
 
     test('passes configuration to logger instance', () => {
-      mockDetectEnvironment.mockReturnValue({
-        isBrowser: false,
-        isNode: true,
-        isDevelopment: true,
-        isProduction: false
-      });
+      mockDetectRuntimeType.mockReturnValue(RuntimeType.NODE);
 
       const config = {
         minLevel: LogLevel.WARN,
@@ -184,12 +166,7 @@ describe('Universal Logger Index', () => {
 
   describe('integration with logger instances', () => {
     test('createLogger produces functional logger for browser', () => {
-      mockDetectEnvironment.mockReturnValue({
-        isBrowser: true,
-        isNode: false,
-        isDevelopment: true,
-        isProduction: false
-      });
+      mockDetectRuntimeType.mockReturnValue(RuntimeType.BROWSER);
 
       const loggerInstance = createLogger({
         minLevel: LogLevel.WARN,
@@ -202,12 +179,7 @@ describe('Universal Logger Index', () => {
     });
 
     test('createLogger produces functional logger for Node.js', () => {
-      mockDetectEnvironment.mockReturnValue({
-        isBrowser: false,
-        isNode: true,
-        isDevelopment: false,
-        isProduction: true
-      });
+      mockDetectRuntimeType.mockReturnValue(RuntimeType.NODE);
 
       const loggerInstance = createLogger({
         minLevel: LogLevel.ERROR,
@@ -245,12 +217,7 @@ describe('Universal Logger Index', () => {
 
   describe('multiple logger instances', () => {
     test('can create multiple independent logger instances', () => {
-      mockDetectEnvironment.mockReturnValue({
-        isBrowser: false,
-        isNode: true,
-        isDevelopment: true,
-        isProduction: false
-      });
+      mockDetectRuntimeType.mockReturnValue(RuntimeType.NODE);
 
       const logger1 = createLogger({ minLevel: LogLevel.DEBUG });
       const logger2 = createLogger({ minLevel: LogLevel.ERROR });
@@ -264,12 +231,7 @@ describe('Universal Logger Index', () => {
     });
 
     test('default logger is independent of created loggers', () => {
-      mockDetectEnvironment.mockReturnValue({
-        isBrowser: false,
-        isNode: true,
-        isDevelopment: true,
-        isProduction: false
-      });
+      mockDetectRuntimeType.mockReturnValue(RuntimeType.NODE);
 
       const customLogger = createLogger({ enabled: false });
       

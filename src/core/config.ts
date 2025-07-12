@@ -244,3 +244,12 @@ export class ConfigManager {
     return { ...this.environment };
   }
 }
+
+/**
+ * Load configuration from environment variables
+ * Utility function for creating loggers with env-based config
+ */
+export function loadConfigFromEnv(): Partial<LoggerConfig> {
+  const configManager = new ConfigManager();
+  return configManager.getConfig();
+}

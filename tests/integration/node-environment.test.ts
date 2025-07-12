@@ -23,7 +23,8 @@ describe('Node.js Environment Integration', () => {
     delete (global as any).window;
     global.console = mockConsole as any;
     global.process = {
-      env: { NODE_ENV: 'development' }
+      env: { NODE_ENV: 'development' },
+      versions: { node: '16.0.0' }
     } as any;
 
     jest.clearAllMocks();
@@ -53,7 +54,8 @@ describe('Node.js Environment Integration', () => {
 
     test('production environment has different defaults', () => {
       global.process = {
-        env: { NODE_ENV: 'production' }
+        env: { NODE_ENV: 'production' },
+        versions: { node: '16.0.0' }
       } as any;
 
       const logger = createLogger();
@@ -137,7 +139,8 @@ describe('Node.js Environment Integration', () => {
           LOGGER_ANSI_INFO: '96',
           LOGGER_ANSI_WARN: '97',
           LOGGER_ANSI_ERROR: '91'
-        }
+        },
+        versions: { node: '16.0.0' }
       } as any;
 
       const logger = createLogger();
@@ -161,7 +164,8 @@ describe('Node.js Environment Integration', () => {
           LOG_LEVEL: 'INVALID_LEVEL',
           LOGGER_ENABLED: 'maybe',
           LOGGER_ANSI_DEBUG: 'not_a_number'
-        }
+        },
+        versions: { node: '16.0.0' }
       } as any;
 
       const logger = createLogger();
@@ -178,6 +182,7 @@ describe('Node.js Environment Integration', () => {
           NODE_ENV: 'development',
           LOG_LEVEL: 'ERROR'
         },
+        versions: { node: '16.0.0' },
         cwd: () => '/test'
       } as any;
 

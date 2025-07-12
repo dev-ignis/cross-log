@@ -3,29 +3,15 @@
  */
 
 import { LogLevel, Environment } from './types';
+import { detectEnvironment as detectEnv, getEnvironmentVariable } from './environment';
 
 
 /**
  * Detect the current environment
+ * Re-exported from environment module for backward compatibility
  */
 export function detectEnvironment(): Environment {
-  const isBrowser = typeof window !== 'undefined';
-  const isNode = !isBrowser && typeof process !== 'undefined';
-
-  // Check for production environment
-  let isProduction = false;
-  if (typeof process !== 'undefined' && process.env && typeof process.env === 'object') {
-    isProduction = process.env.NODE_ENV === 'production';
-  }
-
-  const isDevelopment = !isProduction;
-
-  return {
-    isBrowser,
-    isNode,
-    isDevelopment,
-    isProduction
-  };
+  return detectEnv();
 }
 
 /**
@@ -64,12 +50,10 @@ export function parseEnvInt(value: string | undefined, defaultValue: number): nu
 
 /**
  * Get environment variable with fallback
+ * Now uses the environment abstraction for cross-platform compatibility
  */
 export function getEnvVar(key: string, defaultValue?: string): string | undefined {
-  if (typeof process !== 'undefined' && process.env && typeof process.env === 'object') {
-    return process.env[key] || defaultValue;
-  }
-  return defaultValue;
+  return getEnvironmentVariable(key, defaultValue);
 }
 
 /**

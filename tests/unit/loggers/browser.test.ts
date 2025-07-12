@@ -33,6 +33,7 @@ describe('BrowserLogger', () => {
     
     // Mock window and localStorage
     global.window = {
+      document: {},
       localStorage: mockLocalStorage
     } as any;
     global.localStorage = mockLocalStorage as any;

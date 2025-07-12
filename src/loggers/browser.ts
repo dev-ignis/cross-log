@@ -291,3 +291,10 @@ export class BrowserLogger extends BaseLogger {
     return str.charAt(0).toUpperCase() + str.slice(1);
   }
 }
+
+/**
+ * Factory function to create a browser logger instance
+ */
+export function createLogger(config?: Partial<LoggerConfig>): BrowserLogger {
+  return new BrowserLogger(config);
+}

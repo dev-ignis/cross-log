@@ -22,6 +22,7 @@ const mockConsole = {
 };
 
 const mockWindow = {
+  document: {},
   localStorage: mockLocalStorage
 };
 
@@ -37,7 +38,7 @@ describe('Browser Environment Integration', () => {
     // Set up browser environment
     global.window = mockWindow as any;
     global.console = mockConsole as any;
-    global.process = { env: { NODE_ENV: 'development' }, cwd: () => '/test' } as any;
+    delete (global as any).process;
 
     jest.clearAllMocks();
     mockLocalStorage.getItem.mockReturnValue(null);
@@ -201,16 +202,14 @@ describe('Browser Environment Integration', () => {
 
 
   describe('environment variable overrides', () => {
-    test('respects process.env in browser build tools', () => {
-      global.process = {
-        env: {
-          NODE_ENV: 'development',
-          LOG_LEVEL: 'ERROR',
-          LOGGER_COLORS: 'false',
-          LOGGER_STORAGE_KEY_PREFIX: 'myapp'
-        },
-        cwd: () => '/test'
-      } as any;
+    test('respects environment variables exposed through window.__ENV__', () => {
+      // In production browsers, build tools often expose env vars through window
+      (global.window as any).__ENV__ = {
+        NODE_ENV: 'development',
+        LOG_LEVEL: 'ERROR',
+        LOGGER_COLORS: 'false',
+        LOGGER_STORAGE_KEY_PREFIX: 'myapp'
+      };
 
       const logger = createLogger();
       const config = logger.getConfig();
