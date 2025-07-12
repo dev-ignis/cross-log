@@ -5,10 +5,12 @@ This document provides detailed information about the Universal Logger API, incl
 ## Table of Contents
 
 - [Core Logger API](#core-logger-api)
+- [Framework-Specific Imports](#framework-specific-imports)
 - [Configuration](#configuration)
 - [Categories](#categories)
 - [Browser-Specific Features](#browser-specific-features)
 - [Node.js-Specific Features](#nodejs-specific-features)
+- [Edge Runtime Features](#edge-runtime-features)
 - [Environment Variables](#environment-variables)
 - [Types Reference](#types-reference)
 
@@ -41,6 +43,44 @@ enum LogLevel {
   SILENT = 4  // No logs
 }
 ```
+
+## Framework-Specific Imports
+
+Cross-log provides specialized entry points for different environments:
+
+### Default Import
+```typescript
+import logger from 'cross-log';
+```
+Auto-detects environment and uses appropriate logger.
+
+### Edge Runtime
+```typescript
+import logger from 'cross-log/edge';
+import { createEdgeLogger } from 'cross-log/edge';
+```
+For Vercel Edge Functions, Cloudflare Workers, and other Edge environments.
+
+### Next.js
+```typescript
+import logger from 'cross-log/next';
+import { createNextLogger } from 'cross-log/next';
+```
+Automatically switches between Edge and Node.js based on runtime context.
+
+### Node.js
+```typescript
+import logger from 'cross-log/node';
+import { createNodeLogger } from 'cross-log/node';
+```
+Full Node.js features with ANSI colors and process access.
+
+### Browser
+```typescript
+import logger from 'cross-log/browser';
+import { createBrowserLogger } from 'cross-log/browser';
+```
+Browser-optimized with localStorage and console features.
 
 ## Configuration
 
@@ -197,6 +237,45 @@ logger.configure({
 });
 ```
 
+## Edge Runtime Features
+
+### Edge-Safe Logger
+
+The Edge Runtime logger is optimized for serverless edge environments:
+
+```typescript
+import { createEdgeLogger, LogLevel } from 'cross-log/edge';
+
+const logger = createEdgeLogger({
+  minLevel: LogLevel.INFO,
+  showTimestamp: true,
+  includeStackTrace: false, // Minimize overhead
+  colors: { enabled: false } // No ANSI in Edge
+});
+```
+
+### Runtime Detection
+
+Cross-log automatically detects the runtime environment:
+
+```typescript
+import { detectRuntimeType, RuntimeType } from 'cross-log/edge';
+
+const runtime = detectRuntimeType();
+// Returns: 'edge', 'node', 'browser', 'deno', 'bun', or 'unknown'
+```
+
+### Environment Variables in Edge
+
+Edge environments handle environment variables differently:
+
+```typescript
+import { getEnvironmentVariable } from 'cross-log/edge';
+
+// Works across all environments
+const logLevel = getEnvironmentVariable('LOG_LEVEL', 'INFO');
+```
+
 ## Environment Variables
 
 All configuration options can be set via environment variables:
@@ -223,7 +302,7 @@ All configuration options can be set via environment variables:
 
 ## Types Reference
 
-Complete TypeScript type definitions are included. Key types:
+Complete TypeScript type definitions are included with enhanced v0.4.0 types:
 
 ```typescript
 // Log levels enum
@@ -235,24 +314,43 @@ enum LogLevel {
   SILENT = 4
 }
 
+// Partial configuration type for better inference
+type PartialLoggerConfig = {
+  enabled?: boolean;
+  minLevel?: LogLevel;
+  showTimestamp?: boolean;
+  includeStackTrace?: boolean;
+  categories?: Record<string, Partial<CategoryConfig>>;
+  colors?: {
+    enabled?: boolean;
+    browser?: Partial<BrowserColorConfig>;
+    ansi?: Partial<AnsiColorConfig>;
+  };
+  storage?: Partial<StorageConfig>;
+  browserControls?: Partial<BrowserControlsConfig>;
+};
+
 // Logger interface
 interface ILogger {
   debug(message: string, category?: string, ...args: any[]): void;
   info(message: string, category?: string, ...args: any[]): void;
   warn(message: string, category?: string, ...args: any[]): void;
   error(message: string | Error, category?: string, ...args: any[]): void;
-  
   setLevel(level: LogLevel): void;
-  configure(config: Partial<LoggerConfig>): void;
-  getConfig(): LoggerConfig;
-  isEnabled(): boolean;
-  
-  enableCategory(name: string, level?: LogLevel): void;
-  disableCategory(name: string): void;
-  isCategoryEnabled(name: string): boolean;
-  getEnabledCategories(): Record<string, LogLevel>;
-  
+  configure(config: PartialLoggerConfig): void; // Now uses PartialLoggerConfig
+  enableCategory(category: string, minLevel?: LogLevel): void;
+  disableCategory(category: string): void;
   enableAll(): void;
   disableAll(): void;
+  getConfig(): LoggerConfig;
+  isEnabled(): boolean;
+  Level: typeof LogLevel;
 }
+
+// Type guards
+function isLogLevel(value: unknown): value is LogLevel;
+function isLogLevelString(value: unknown): value is keyof typeof LogLevel;
+
+// Configuration utilities
+function mergeConfig(base: LoggerConfig, partial: PartialLoggerConfig): LoggerConfig;
 ```
