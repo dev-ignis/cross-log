@@ -7,7 +7,25 @@
 
 import { createLogger as createNodeLogger } from '../loggers/node';
 import { createEdgeLogger } from '../loggers/edge';
-import { LogLevel, LoggerConfig, ILogger } from '../core/types';
+import { 
+  LogLevel, 
+  LoggerConfig,
+  PartialLoggerConfig,
+  ILogger,
+  LogEntry,
+  Environment,
+  CategoryConfig,
+  ColorConfig,
+  BrowserColorConfig,
+  AnsiColorConfig,
+  StorageConfig,
+  BrowserControlsConfig,
+  EnvConfig,
+  DeepPartial,
+  LogLevelValue,
+  isLogLevel,
+  isLogLevelString
+} from '../core/types';
 import { loadConfigFromEnv } from '../core/config';
 import { detectRuntimeType, RuntimeType } from '../core/environment';
 
@@ -15,7 +33,7 @@ import { detectRuntimeType, RuntimeType } from '../core/environment';
  * Create a Next.js-optimized logger
  * Automatically detects Edge Runtime vs Node.js runtime
  */
-export function createNextLogger(config?: Partial<LoggerConfig>): ILogger {
+export function createNextLogger(config?: PartialLoggerConfig): ILogger {
   const runtime = detectRuntimeType();
   const mergedConfig = {
     ...loadConfigFromEnv(),
@@ -37,8 +55,30 @@ const nextLogger = createNextLogger();
 // Export the logger instance and utilities
 export default nextLogger;
 export { nextLogger as logger };
+// Export types
 export { LogLevel };
-export type { LoggerConfig, ILogger };
+export type { 
+  LoggerConfig,
+  PartialLoggerConfig,
+  ILogger,
+  LogEntry,
+  Environment,
+  CategoryConfig,
+  ColorConfig,
+  BrowserColorConfig,
+  AnsiColorConfig,
+  StorageConfig,
+  BrowserControlsConfig,
+  EnvConfig,
+  DeepPartial,
+  LogLevelValue
+};
+
+// Export type guards and utilities
+export {
+  isLogLevel,
+  isLogLevelString
+};
 
 
 // Re-export environment utilities

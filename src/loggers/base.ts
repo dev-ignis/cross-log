@@ -6,7 +6,8 @@ import {
   ILogger, 
   LoggerConfig, 
   LogLevel, 
-  LogEntry 
+  LogEntry,
+  PartialLoggerConfig 
 } from '../core/types';
 import { ConfigManager } from '../core/config';
 import { 
@@ -19,7 +20,7 @@ export abstract class BaseLogger implements ILogger {
   protected recentLogs: Map<string, number> = new Map();
   protected readonly duplicateThreshold = 1000; // ms
 
-  constructor(initialConfig?: Partial<LoggerConfig>) {
+  constructor(initialConfig?: PartialLoggerConfig) {
     this.configManager = new ConfigManager(initialConfig);
   }
 
@@ -62,7 +63,7 @@ export abstract class BaseLogger implements ILogger {
   /**
    * Configure the logger
    */
-  configure(newConfig: Partial<LoggerConfig>): void {
+  configure(newConfig: PartialLoggerConfig): void {
     this.configManager.updateConfig(newConfig);
   }
 

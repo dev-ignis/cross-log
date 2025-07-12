@@ -17,16 +17,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Runtime detection for Edge, Deno, Bun environments
 - Cross-platform environment variable support
 - EdgeLogger class for Edge Runtime environments
-- Examples for Edge Runtime and Next.js usage
+- `PartialLoggerConfig` type for better TypeScript inference
+- Type guards: `isLogLevel()` and `isLogLevelString()`
+- `mergeConfig()` utility for type-safe configuration merging
+- Environment-specific export conditions in package.json
+- Comprehensive type exports from all adapter entry points
+- Bundler test configurations for Webpack, Vite, Rollup, and esbuild
 
 ### Changed
 - **BREAKING**: Environment detection now uses runtime-specific detection instead of simple browser/node checks
+- **BREAKING**: `ILogger.configure()` now accepts `PartialLoggerConfig` instead of `Partial<LoggerConfig>` for better type inference
 - Improved TypeScript declarations with proper exports for each entry point
 - Enhanced ESM/CJS dual package support with conditional exports
+- Better partial configuration handling with deep merging support
 
 ### Fixed
 - Environment variable access in Edge Runtime environments
 - Module resolution for framework-specific imports
+- TypeScript strict mode compatibility issues
+- Circular dependency in type definitions
 
 ## [0.3.1] - Previous version
 - Bug fixes and improvements

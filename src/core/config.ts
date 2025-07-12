@@ -6,7 +6,9 @@ import {
   LoggerConfig,
   LogLevel,
   Environment,
-  EnvConfig
+  EnvConfig,
+  PartialLoggerConfig,
+  mergeConfig
 } from './types';
 import {
   detectEnvironment,
@@ -19,7 +21,7 @@ export class ConfigManager {
   private config: LoggerConfig;
   private environment: Environment;
 
-  constructor(initialConfig?: Partial<LoggerConfig>) {
+  constructor(initialConfig?: PartialLoggerConfig) {
     this.environment = detectEnvironment();
     this.config = this.mergeWithDefaults(initialConfig);
   }
@@ -34,14 +36,14 @@ export class ConfigManager {
   /**
    * Update configuration
    */
-  updateConfig(newConfig: Partial<LoggerConfig>): void {
-    this.config = { ...this.config, ...newConfig };
+  updateConfig(newConfig: PartialLoggerConfig): void {
+    this.config = mergeConfig(this.config, newConfig);
   }
 
   /**
    * Merge user config with smart defaults
    */
-  private mergeWithDefaults(userConfig?: Partial<LoggerConfig>): LoggerConfig {
+  private mergeWithDefaults(userConfig?: PartialLoggerConfig): LoggerConfig {
     const envConfig = this.getEnvConfig();
 
     // Base defaults without environment variables
@@ -77,7 +79,7 @@ export class ConfigManager {
     };
 
     // Environment variable overrides
-    const envOverrides: Partial<LoggerConfig> = {};
+    const envOverrides: PartialLoggerConfig = {};
 
     if (envConfig.LOGGER_ENABLED !== undefined) {
       envOverrides.enabled = parseEnvBoolean(envConfig.LOGGER_ENABLED, true);
@@ -199,7 +201,14 @@ export class ConfigManager {
     }
 
     // Merge: base defaults < user config < environment variables
-    return { ...baseDefaults, ...userConfig, ...envOverrides };
+    let result = baseDefaults;
+    if (userConfig) {
+      result = mergeConfig(result, userConfig);
+    }
+    if (Object.keys(envOverrides).length > 0) {
+      result = mergeConfig(result, envOverrides);
+    }
+    return result;
   }
 
   /**
@@ -249,7 +258,7 @@ export class ConfigManager {
  * Load configuration from environment variables
  * Utility function for creating loggers with env-based config
  */
-export function loadConfigFromEnv(): Partial<LoggerConfig> {
+export function loadConfigFromEnv(): PartialLoggerConfig {
   const configManager = new ConfigManager();
   return configManager.getConfig();
 }

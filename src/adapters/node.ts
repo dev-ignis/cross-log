@@ -6,7 +6,25 @@
  */
 
 import { createLogger as createNodeLogger } from '../loggers/node';
-import { LogLevel, LoggerConfig } from '../core/types';
+import { 
+  LogLevel, 
+  LoggerConfig,
+  PartialLoggerConfig,
+  ILogger,
+  LogEntry,
+  Environment,
+  CategoryConfig,
+  ColorConfig,
+  BrowserColorConfig,
+  AnsiColorConfig,
+  StorageConfig,
+  BrowserControlsConfig,
+  EnvConfig,
+  DeepPartial,
+  LogLevelValue,
+  isLogLevel,
+  isLogLevelString
+} from '../core/types';
 import { loadConfigFromEnv } from '../core/config';
 
 // Create a singleton logger instance for Node.js
@@ -15,8 +33,30 @@ const nodeLogger = createNodeLogger(loadConfigFromEnv());
 // Export the logger instance and utilities
 export default nodeLogger;
 export { nodeLogger as logger };
+// Export types
 export { LogLevel };
-export type { LoggerConfig };
+export type { 
+  LoggerConfig,
+  PartialLoggerConfig,
+  ILogger,
+  LogEntry,
+  Environment,
+  CategoryConfig,
+  ColorConfig,
+  BrowserColorConfig,
+  AnsiColorConfig,
+  StorageConfig,
+  BrowserControlsConfig,
+  EnvConfig,
+  DeepPartial,
+  LogLevelValue
+};
+
+// Export type guards and utilities
+export {
+  isLogLevel,
+  isLogLevelString
+};
 
 // Export factory function for creating custom instances
 export { createLogger as createNodeLogger } from '../loggers/node';
@@ -27,4 +67,3 @@ export {
   getEnvironmentVariable,
   isProductionEnvironment
 } from '../core/environment';
-

@@ -3,7 +3,7 @@
  */
 
 import { BaseLogger } from './base';
-import { LoggerConfig, LogLevel, LogEntry } from '../core/types';
+import { LogLevel, LogEntry, PartialLoggerConfig } from '../core/types';
 import { createAnsiColor, resetAnsiColor } from '../core/utils';
 
 export class NodeLogger extends BaseLogger {
@@ -15,7 +15,7 @@ export class NodeLogger extends BaseLogger {
     log: typeof console.log;
   };
 
-  constructor(initialConfig?: Partial<LoggerConfig>) {
+  constructor(initialConfig?: PartialLoggerConfig) {
     super(initialConfig);
 
     // Store references to original console methods to prevent infinite recursion
@@ -107,6 +107,6 @@ export class NodeLogger extends BaseLogger {
 /**
  * Factory function to create a node logger instance
  */
-export function createLogger(config?: Partial<LoggerConfig>): NodeLogger {
+export function createLogger(config?: PartialLoggerConfig): NodeLogger {
   return new NodeLogger(config);
 }

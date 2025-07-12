@@ -8,12 +8,20 @@
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
+      "node": {
+        "import": "./dist/index.esm.js",
+        "require": "./dist/index.js"
+      },
+      "browser": "./dist/index.esm.js",
       "import": "./dist/index.esm.js",
       "require": "./dist/index.js",
       "default": "./dist/index.js"
     },
     "./edge": {
       "types": "./dist/adapters/edge.d.ts",
+      "edge-runtime": "./dist/adapters/edge.esm.js",
+      "cloudflare-worker": "./dist/adapters/edge.esm.js",
+      "vercel-edge": "./dist/adapters/edge.esm.js",
       "import": "./dist/adapters/edge.esm.js",
       "require": "./dist/adapters/edge.js",
       "default": "./dist/adapters/edge.js"
@@ -26,16 +34,22 @@
     },
     "./node": {
       "types": "./dist/adapters/node.d.ts",
+      "node": {
+        "import": "./dist/adapters/node.esm.js",
+        "require": "./dist/adapters/node.js"
+      },
       "import": "./dist/adapters/node.esm.js",
       "require": "./dist/adapters/node.js",
       "default": "./dist/adapters/node.js"
     },
     "./browser": {
       "types": "./dist/adapters/browser.d.ts",
+      "browser": "./dist/adapters/browser.esm.js",
       "import": "./dist/adapters/browser.esm.js",
       "require": "./dist/adapters/browser.js",
       "default": "./dist/adapters/browser.js"
-    }
+    },
+    "./package.json": "./package.json"
   },
   "files": [
     "dist",

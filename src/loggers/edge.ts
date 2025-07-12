@@ -4,7 +4,7 @@
  */
 
 import { BaseLogger } from './base';
-import { LogLevel, LoggerConfig, LogEntry } from '../core/types';
+import { LogLevel, LogEntry, PartialLoggerConfig } from '../core/types';
 import { getConsoleMethod } from '../core/utils';
 
 /**
@@ -12,7 +12,7 @@ import { getConsoleMethod } from '../core/utils';
  * Uses only Web APIs and avoids Node.js-specific features
  */
 export class EdgeLogger extends BaseLogger {
-  constructor(config?: Partial<LoggerConfig>) {
+  constructor(config?: PartialLoggerConfig) {
     // Apply Edge-specific defaults before passing to parent
     const edgeConfig = config ? {
       ...config,
@@ -64,7 +64,7 @@ export class EdgeLogger extends BaseLogger {
    * Edge-specific configuration
    * Disables features not available in Edge Runtime
    */
-  public configure(config: Partial<LoggerConfig>): void {
+  public configure(config: PartialLoggerConfig): void {
     // Disable features not available in Edge Runtime
     const edgeConfig = {
       ...config,
@@ -87,6 +87,6 @@ export class EdgeLogger extends BaseLogger {
 /**
  * Factory function to create an Edge logger instance
  */
-export function createEdgeLogger(config?: Partial<LoggerConfig>): EdgeLogger {
+export function createEdgeLogger(config?: PartialLoggerConfig): EdgeLogger {
   return new EdgeLogger(config);
 }

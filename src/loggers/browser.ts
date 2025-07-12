@@ -3,7 +3,7 @@
  */
 
 import { BaseLogger } from './base';
-import { LoggerConfig, LogLevel, LogEntry } from '../core/types';
+import { LogLevel, LogEntry, PartialLoggerConfig } from '../core/types';
 
 // Window interface extension for TypeScript
 interface WindowWithLogger {
@@ -20,7 +20,7 @@ export class BrowserLogger extends BaseLogger {
     log: typeof console.log;
   };
 
-  constructor(initialConfig?: Partial<LoggerConfig>) {
+  constructor(initialConfig?: PartialLoggerConfig) {
     super(initialConfig);
 
     // Store references to original console methods to prevent infinite recursion
@@ -75,7 +75,7 @@ export class BrowserLogger extends BaseLogger {
   /**
    * Override configure to save to storage
    */
-  configure(newConfig: Partial<LoggerConfig>): void {
+  configure(newConfig: PartialLoggerConfig): void {
     super.configure(newConfig);
     this.saveConfigToStorage();
   }
@@ -295,6 +295,6 @@ export class BrowserLogger extends BaseLogger {
 /**
  * Factory function to create a browser logger instance
  */
-export function createLogger(config?: Partial<LoggerConfig>): BrowserLogger {
+export function createLogger(config?: PartialLoggerConfig): BrowserLogger {
   return new BrowserLogger(config);
 }

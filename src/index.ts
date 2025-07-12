@@ -7,13 +7,13 @@
 import { BrowserLogger } from './loggers/browser';
 import { NodeLogger } from './loggers/node';
 import { EdgeLogger } from './loggers/edge';
-import { LoggerConfig, ILogger } from './core/types';
+import { ILogger, PartialLoggerConfig } from './core/types';
 import { detectRuntimeType, RuntimeType } from './core/environment';
 
 /**
  * Create a logger instance with automatic environment detection
  */
-export function createLogger(config?: Partial<LoggerConfig>): ILogger {
+export function createLogger(config?: PartialLoggerConfig): ILogger {
   const runtime = detectRuntimeType();
   
   switch (runtime) {
@@ -72,7 +72,15 @@ export {
   Environment,
   ILogger,
   LogEntry,
-  EnvConfig
+  EnvConfig,
+  // Type utilities
+  DeepPartial,
+  PartialLoggerConfig,
+  LogLevelValue,
+  // Type guards and utilities
+  isLogLevel,
+  isLogLevelString,
+  mergeConfig
 } from './core/types';
 
 // Export utilities

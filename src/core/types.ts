@@ -78,7 +78,7 @@ export interface ILogger {
   warn(message: string, category?: string, ...args: unknown[]): void;
   error(message: string | Error, category?: string, ...args: unknown[]): void;
   setLevel(level: LogLevel): void;
-  configure(config: Partial<LoggerConfig>): void;
+  configure(config: PartialLoggerConfig): void;
   enableCategory(category: string, minLevel?: LogLevel): void;
   disableCategory(category: string): void;
   enableAll(): void;
@@ -116,4 +116,93 @@ export interface EnvConfig {
   LOGGER_ANSI_INFO: string | undefined;
   LOGGER_ANSI_WARN: string | undefined;
   LOGGER_ANSI_ERROR: string | undefined;
+}
+
+/**
+ * Deep partial type that makes all properties and nested properties optional
+ */
+export type DeepPartial<T> = T extends object
+  ? {
+      [P in keyof T]?: DeepPartial<T[P]>;
+    }
+  : T;
+
+/**
+ * Helper type for partial logger configuration with better inference
+ */
+export type PartialLoggerConfig = {
+  enabled?: boolean;
+  minLevel?: LogLevel;
+  showTimestamp?: boolean;
+  includeStackTrace?: boolean;
+  categories?: Record<string, Partial<CategoryConfig>>;
+  colors?: {
+    enabled?: boolean;
+    browser?: Partial<BrowserColorConfig>;
+    ansi?: Partial<AnsiColorConfig>;
+  };
+  storage?: Partial<StorageConfig>;
+  browserControls?: Partial<BrowserControlsConfig>;
+};
+
+/**
+ * Type for log level values (string or enum)
+ */
+export type LogLevelValue = LogLevel | keyof typeof LogLevel;
+
+/**
+ * Type guard to check if a value is a valid LogLevel
+ */
+export function isLogLevel(value: unknown): value is LogLevel {
+  return typeof value === 'number' && value >= LogLevel.DEBUG && value <= LogLevel.SILENT;
+}
+
+/**
+ * Type guard to check if a value is a valid LogLevel string
+ */
+export function isLogLevelString(value: unknown): value is keyof typeof LogLevel {
+  return typeof value === 'string' && value in LogLevel;
+}
+
+/**
+ * Deep merge configuration objects
+ */
+export function mergeConfig(base: LoggerConfig, partial: PartialLoggerConfig): LoggerConfig {
+  const result = { ...base };
+
+  if (partial.enabled !== undefined) result.enabled = partial.enabled;
+  if (partial.minLevel !== undefined) result.minLevel = partial.minLevel;
+  if (partial.showTimestamp !== undefined) result.showTimestamp = partial.showTimestamp;
+  if (partial.includeStackTrace !== undefined) result.includeStackTrace = partial.includeStackTrace;
+
+  if (partial.categories) {
+    result.categories = { ...base.categories };
+    // Merge partial category configs
+    for (const [key, value] of Object.entries(partial.categories)) {
+      if (value) {
+        result.categories[key] = {
+          enabled: value.enabled ?? base.categories[key]?.enabled ?? true,
+          minLevel: value.minLevel ?? base.categories[key]?.minLevel ?? LogLevel.DEBUG
+        };
+      }
+    }
+  }
+
+  if (partial.colors) {
+    result.colors = {
+      enabled: partial.colors.enabled ?? base.colors.enabled,
+      browser: partial.colors.browser ? { ...base.colors.browser, ...partial.colors.browser } : base.colors.browser,
+      ansi: partial.colors.ansi ? { ...base.colors.ansi, ...partial.colors.ansi } : base.colors.ansi
+    };
+  }
+
+  if (partial.storage) {
+    result.storage = { ...base.storage, ...partial.storage };
+  }
+
+  if (partial.browserControls) {
+    result.browserControls = { ...base.browserControls, ...partial.browserControls };
+  }
+
+  return result;
 }
