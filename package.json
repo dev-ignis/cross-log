@@ -1,6 +1,6 @@
 {
   "name": "cross-log",
-  "version": "0.3.1",
+  "version": "0.4.0",
   "description": "A universal logging package that works in both browser and Node.js environments with environment variable configuration",
   "main": "dist/index.js",
   "module": "dist/index.esm.js",
@@ -64,7 +64,12 @@
     "nodejs",
     "typescript",
     "environment",
-    "debug"
+    "debug",
+    "edge-runtime",
+    "cloudflare-workers",
+    "vercel-edge",
+    "nextjs",
+    "cross-platform"
   ],
   "author": "dev-ignis",
   "license": "MIT",

@@ -10,6 +10,7 @@ A universal logging package that works seamlessly in both browser and Node.js en
 ## ✨ Features
 
 - **🌍 Universal**: Single package works in browser and Node.js
+- **🚀 Edge Runtime Support**: Works in Vercel Edge Functions and Cloudflare Workers
 - **⚙️ Environment-driven**: Configuration via environment variables with smart defaults
 - **🪶 Zero dependencies**: Lightweight and secure
 - **📘 TypeScript-first**: Full type safety and IntelliSense
@@ -23,6 +24,58 @@ A universal logging package that works seamlessly in both browser and Node.js en
 
 ```bash
 npm install cross-log
+```
+
+## 🚀 Edge Runtime Support (New in v0.4.0)
+
+Cross-log now works seamlessly in Edge Runtime environments like Vercel Edge Functions and Cloudflare Workers!
+
+### Framework-Specific Imports
+
+```typescript
+// For Edge Runtime environments (Vercel Edge, Cloudflare Workers)
+import logger from 'cross-log/edge';
+
+// For Next.js (automatically detects Edge vs Node runtime)
+import logger from 'cross-log/next';
+
+// For Node.js-only features
+import logger from 'cross-log/node';
+
+// For browser-optimized builds
+import logger from 'cross-log/browser';
+```
+
+### Edge Runtime Example
+
+```typescript
+// In a Vercel Edge Function or Cloudflare Worker
+import logger from 'cross-log/edge';
+
+export default function handler(request: Request) {
+  logger.info('Edge function called', 'api');
+  
+  try {
+    // Your edge function logic
+    return new Response('Success');
+  } catch (error) {
+    logger.error(error, 'api');
+    return new Response('Error', { status: 500 });
+  }
+}
+```
+
+### Next.js Middleware Example
+
+```typescript
+import logger from 'cross-log/next';
+import { NextResponse } from 'next/server';
+
+export function middleware(request: Request) {
+  // Automatically uses Edge-safe logger in middleware
+  logger.info(`Middleware: ${request.method} ${request.url}`);
+  return NextResponse.next();
+}
 ```
 
 ## 🚀 Quick Start
