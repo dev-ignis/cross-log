@@ -37,6 +37,12 @@ export class PluginManager {
 
     try {
       plugin.init(context);
+      
+      // Get methods from context after init
+      if ((context as any).methods) {
+        instance.methods = (context as any).methods;
+      }
+      
       this.plugins.set(plugin.name, instance);
       
       this.attachPluginMethods(plugin.name, instance);
