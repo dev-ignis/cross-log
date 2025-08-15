@@ -148,13 +148,23 @@ describe('Plugin System', () => {
       const plugin = createPerformancePlugin();
       logger.use(plugin);
       
-      // Mock performance.now
+      // Mock performance.now with Object.defineProperty
       let now = 0;
-      jest.spyOn(performance, 'now').mockImplementation(() => now);
+      const originalNow = performance.now;
+      Object.defineProperty(performance, 'now', {
+        configurable: true,
+        value: () => now
+      });
       
       logger.performance?.mark('start');
       now = 1000;
       logger.performance?.mark('start');
+      
+      // Restore original
+      Object.defineProperty(performance, 'now', {
+        configurable: true,
+        value: originalNow
+      });
       
       expect(debugSpy).toHaveBeenCalled();
       // Check that one of the calls contains the expected text
