@@ -19,6 +19,7 @@ A universal logging package that works seamlessly in both browser and Node.js en
 - **💾 Persistent storage**: Browser localStorage integration for settings
 - **🏷️ Category-based**: Organize logs by categories with individual control
 - **⚡ Performance-optimized**: Duplicate log prevention and minimal overhead when disabled
+- **🔌 Plugin System**: Built-in plugins for API, Database, Analytics, Performance, and Security logging
 
 ## 📦 Installation
 
@@ -175,6 +176,169 @@ logger.debug('Database query executed', 'db');
 logger.info('Component rendered', 'ui');
 ```
 
+### 🔌 Plugin System (New in v0.5.0)
+
+Cross-log now includes a powerful plugin system for domain-specific logging patterns:
+
+#### Available Plugins
+
+- **API Plugin**: HTTP request/response logging with session tracking
+- **Database Plugin**: Query logging, transactions, and slow query detection
+- **Analytics Plugin**: Event tracking for multiple providers
+- **Performance Plugin**: Web Vitals, resource timing, and cache operations
+- **Security Plugin**: Authentication events, access control, and vulnerability tracking
+
+#### Basic Plugin Usage
+
+```typescript
+import { createLogger, plugins } from 'cross-log';
+
+const logger = createLogger();
+
+// Add plugins
+logger.use(plugins.api({ includeSessionId: true }));
+logger.use(plugins.database({ truncateQueries: 100 }));
+logger.use(plugins.analytics({ providers: ['google', 'facebook'] }));
+logger.use(plugins.performance({ webVitals: true }));
+logger.use(plugins.security({ severity: true }));
+
+// Use plugin methods
+logger.api?.request('GET', '/api/users', 120, 200);
+logger.database?.query('SELECT * FROM users', 45, 10);
+logger.analytics?.event('PageView', 'facebook', { page: '/home' });
+logger.performance?.webVitals({ fcp: 1200, lcp: 2100 });
+logger.security?.authSuccess('user_123', '2fa');
+```
+
+#### API Plugin
+
+```typescript
+logger.use(plugins.api({
+  includeSessionId: true,
+  includeHeaders: false,
+  truncateUrl: 150
+}));
+
+// Log API requests
+logger.api?.request('GET', '/api/users', 120, 200);
+logger.api?.response('/api/users', 200, 120, { users: [] });
+logger.api?.error('POST', '/api/login', new Error('Invalid credentials'), 401);
+```
+
+#### Database Plugin
+
+```typescript
+logger.use(plugins.database({
+  truncateQueries: 200,
+  includeParams: true,
+  slowQueryThreshold: 1000
+}));
+
+// Log database operations
+logger.database?.query('SELECT * FROM users WHERE active = ?', 45, 10, [true]);
+logger.database?.transaction('tx_123', 'begin');
+logger.database?.transaction('tx_123', 'commit', 230);
+logger.database?.slowQuery('SELECT * FROM orders JOIN products', 5000);
+logger.database?.error('INSERT INTO logs', new Error('Connection lost'));
+```
+
+#### Analytics Plugin
+
+```typescript
+logger.use(plugins.analytics({
+  providers: ['google', 'facebook', 'mixpanel'],
+  includeUserContext: true
+}));
+
+// Track analytics events
+logger.analytics?.event('button_click', 'google', { button: 'subscribe' });
+logger.analytics?.pageView('/home', 'facebook');
+logger.analytics?.conversion('purchase', 99.99, 'mixpanel', { product: 'premium' });
+logger.analytics?.identify('user_123', { name: 'John Doe', plan: 'premium' });
+```
+
+#### Performance Plugin
+
+```typescript
+logger.use(plugins.performance({
+  webVitals: true,
+  resourceTiming: true,
+  thresholds: {
+    fcp: 1500,
+    lcp: 2000,
+    fid: 50,
+    cls: 0.05,
+    ttfb: 600
+  }
+}));
+
+// Track performance metrics
+logger.performance?.measure('api_call', 450);
+logger.performance?.mark('page_load_start');
+logger.performance?.webVitals({ fcp: 1200, lcp: 2100, cls: 0.05 });
+logger.performance?.resource('script.js', 'script', 230, 45000);
+logger.performance?.cache('hit', 'user_123');
+```
+
+#### Security Plugin
+
+```typescript
+logger.use(plugins.security({
+  severity: true,
+  includeIpAddress: false,
+  includeUserAgent: true
+}));
+
+// Log security events
+logger.security?.event('login_attempt', 'medium');
+logger.security?.authFailure('Invalid password', 'user@example.com');
+logger.security?.authSuccess('user_123', '2fa');
+logger.security?.accessDenied('/admin', 'user_456', 'Insufficient privileges');
+logger.security?.suspiciousActivity('multiple_login_failures', { attempts: 5 });
+logger.security?.vulnerability('sql_injection', 'high', { endpoint: '/api/search' });
+```
+
+#### Real-World Integration Example
+
+```typescript
+// Express.js middleware with logging
+async function apiMiddleware(req, res, next) {
+  const startTime = Date.now();
+  
+  logger.api?.request(req.method, req.url);
+  
+  res.on('finish', () => {
+    const duration = Date.now() - startTime;
+    logger.api?.response(req.url, res.statusCode, duration);
+    
+    if (duration > 1000) {
+      logger.performance?.measure(`Slow API: ${req.url}`, duration);
+    }
+  });
+  
+  next();
+}
+
+// Database transaction with logging
+async function performTransaction() {
+  const txId = `tx_${Date.now()}`;
+  
+  try {
+    logger.database?.transaction(txId, 'begin');
+    
+    const result = await db.query('UPDATE users SET last_login = NOW() WHERE id = ?', [123]);
+    logger.database?.query('UPDATE users SET last_login = NOW() WHERE id = ?', 45, 1, [123]);
+    
+    logger.database?.transaction(txId, 'commit', 50);
+    return result;
+  } catch (error) {
+    logger.database?.transaction(txId, 'rollback');
+    logger.database?.error('Transaction failed', error);
+    throw error;
+  }
+}
+```
+
 ### Browser Console Controls
 
 In development, use these browser console functions:
@@ -275,6 +439,21 @@ npm run test -- --coverage
 - `disableAll()` - Disable all logging
 - `getConfig()` - Get current configuration
 - `isEnabled()` - Check if logging is enabled
+
+### Plugin Methods
+
+- `use(plugin)` - Register a plugin with the logger
+- `getPlugin(name)` - Get a registered plugin instance
+
+### Plugin-Specific Methods
+
+When plugins are registered, they add their methods to the logger:
+
+- `logger.api` - API request/response logging methods
+- `logger.database` - Database query and transaction logging
+- `logger.analytics` - Analytics event tracking
+- `logger.performance` - Performance metrics and Web Vitals
+- `logger.security` - Security event logging
 
 ## License
 

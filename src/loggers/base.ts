@@ -3,7 +3,6 @@
  */
 
 import { 
-  ILogger, 
   LoggerConfig, 
   LogLevel, 
   LogEntry,
@@ -14,14 +13,18 @@ import {
   isLoggingEnabled, 
   formatMessage
 } from '../core/utils';
+import { PluginManager } from '../plugins/manager';
+import { Plugin, LoggerWithPlugins } from '../plugins/types';
 
-export abstract class BaseLogger implements ILogger {
+export abstract class BaseLogger implements LoggerWithPlugins {
   protected configManager: ConfigManager;
+  protected pluginManager: PluginManager;
   protected recentLogs: Map<string, number> = new Map();
   protected readonly duplicateThreshold = 1000; // ms
 
   constructor(initialConfig?: PartialLoggerConfig) {
     this.configManager = new ConfigManager(initialConfig);
+    this.pluginManager = new PluginManager(this);
   }
 
   /**
@@ -133,6 +136,20 @@ export abstract class BaseLogger implements ILogger {
    */
   get Level(): typeof LogLevel {
     return LogLevel;
+  }
+
+  /**
+   * Use a plugin with the logger
+   */
+  use(plugin: Plugin): void {
+    this.pluginManager.use(plugin);
+  }
+
+  /**
+   * Get a plugin instance by name
+   */
+  getPlugin(name: string) {
+    return this.pluginManager.getPlugin(name);
   }
 
   /**

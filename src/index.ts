@@ -106,5 +106,32 @@ export {
 // Export configuration manager
 export { ConfigManager } from './core/config';
 
+// Export plugins
+export { 
+  plugins,
+  createApiPlugin,
+  createDatabasePlugin,
+  createAnalyticsPlugin,
+  createPerformancePlugin,
+  createSecurityPlugin,
+  PluginManager,
+  Plugin,
+  PluginConfig,
+  PluginContext,
+  LoggerWithPlugins,
+  ApiPlugin,
+  DatabasePlugin,
+  AnalyticsPlugin,
+  PerformancePlugin,
+  SecurityPlugin,
+  ApiPluginConfig,
+  DatabasePluginConfig,
+  AnalyticsPluginConfig,
+  PerformancePluginConfig,
+  SecurityPluginConfig,
+  WebVitalsMetrics,
+  SecuritySeverity
+} from './plugins';
+
 // Default export
 export default defaultLogger;
