@@ -349,7 +349,7 @@ describe('Plugin System', () => {
       
       const instance = logger.getPlugin('analytics');
       expect(instance).toBeDefined();
-      expect(instance.plugin.name).toBe('analytics');
+      expect(instance.name).toBe('analytics');
     });
   });
 });
