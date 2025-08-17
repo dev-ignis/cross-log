@@ -6,7 +6,8 @@ import {
   LoggerConfig, 
   LogLevel, 
   LogEntry,
-  PartialLoggerConfig 
+  PartialLoggerConfig,
+  ILogger 
 } from '../core/types';
 import { ConfigManager } from '../core/config';
 import { 
@@ -141,15 +142,36 @@ export abstract class BaseLogger implements LoggerWithPlugins {
   /**
    * Use a plugin with the logger
    */
-  use(plugin: Plugin): void {
+  use(plugin: Plugin): ILogger {
     this.pluginManager.use(plugin);
+    const instance = this.pluginManager.getPlugin(plugin.name);
+    if (instance?.methods) {
+      (this as any)[plugin.name] = instance.methods;
+    }
+    return this;
   }
 
   /**
    * Get a plugin instance by name
    */
-  getPlugin(name: string) {
-    return this.pluginManager.getPlugin(name);
+  getPlugin(name: string): Plugin | undefined {
+    const instance = this.pluginManager.getPlugin(name);
+    return instance?.plugin;
+  }
+
+  /**
+   * Check if a plugin is loaded
+   */
+  hasPlugin(name: string): boolean {
+    return this.pluginManager.hasPlugin(name);
+  }
+
+  /**
+   * Remove a plugin
+   */
+  removePlugin(name: string): void {
+    this.pluginManager.remove(name);
+    delete (this as any)[name];
   }
 
   /**

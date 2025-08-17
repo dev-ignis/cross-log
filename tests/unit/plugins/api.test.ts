@@ -174,7 +174,7 @@ describe('API Plugin', () => {
       
       expect(logger.api).toBeDefined();
       
-      plugin.destroy();
+      plugin.destroy?.();
       // Plugin should still be attached to logger, but internal state cleared
       expect(plugin.name).toBe('api');
     });

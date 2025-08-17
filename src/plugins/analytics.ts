@@ -1,9 +1,11 @@
-import { Plugin, PluginContext, AnalyticsPlugin, AnalyticsPluginConfig, PluginInstance } from './types';
+import { PluginContext, AnalyticsPlugin, AnalyticsPluginConfig, PluginInstance } from './types';
+import { TypedPlugin } from './plugin-types';
 
-export class AnalyticsEventPlugin implements Plugin<AnalyticsPluginConfig> {
-  name = 'analytics';
+export class AnalyticsEventPlugin implements TypedPlugin<'analytics'> {
+  name: 'analytics' = 'analytics';
   version = '1.0.0';
   config: AnalyticsPluginConfig;
+  methods?: AnalyticsPlugin;
   private context?: PluginContext;
   private userContext?: Record<string, any>;
 

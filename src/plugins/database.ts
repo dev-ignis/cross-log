@@ -1,9 +1,11 @@
-import { Plugin, PluginContext, DatabasePlugin, DatabasePluginConfig, PluginInstance } from './types';
+import { PluginContext, DatabasePlugin, DatabasePluginConfig, PluginInstance } from './types';
+import { TypedPlugin } from './plugin-types';
 
-export class DatabaseQueryPlugin implements Plugin<DatabasePluginConfig> {
-  name = 'database';
+export class DatabaseQueryPlugin implements TypedPlugin<'database'> {
+  name: 'database' = 'database';
   version = '1.0.0';
   config: DatabasePluginConfig;
+  methods?: DatabasePlugin;
   private context?: PluginContext;
 
   constructor(config?: DatabasePluginConfig) {

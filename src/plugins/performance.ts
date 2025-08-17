@@ -1,9 +1,11 @@
-import { Plugin, PluginContext, PerformancePlugin, PerformancePluginConfig, WebVitalsMetrics, PluginInstance } from './types';
+import { PluginContext, PerformancePlugin, PerformancePluginConfig, WebVitalsMetrics, PluginInstance } from './types';
+import { TypedPlugin } from './plugin-types';
 
-export class PerformanceMetricsPlugin implements Plugin<PerformancePluginConfig> {
-  name = 'performance';
+export class PerformanceMetricsPlugin implements TypedPlugin<'performance'> {
+  name: 'performance' = 'performance';
   version = '1.0.0';
   config: PerformancePluginConfig;
+  methods?: PerformancePlugin;
   private context?: PluginContext;
   private marks: Map<string, number> = new Map();
 

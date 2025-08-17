@@ -1,9 +1,11 @@
-import { Plugin, PluginContext, SecurityPlugin, SecurityPluginConfig, SecuritySeverity, PluginInstance } from './types';
+import { PluginContext, SecurityPlugin, SecurityPluginConfig, SecuritySeverity, PluginInstance } from './types';
+import { TypedPlugin } from './plugin-types';
 
-export class SecurityEventPlugin implements Plugin<SecurityPluginConfig> {
-  name = 'security';
+export class SecurityEventPlugin implements TypedPlugin<'security'> {
+  name: 'security' = 'security';
   version = '1.0.0';
   config: SecurityPluginConfig;
+  methods?: SecurityPlugin;
   private context?: PluginContext;
   private failedAttempts: Map<string, number> = new Map();
 

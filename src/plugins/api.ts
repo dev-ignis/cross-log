@@ -1,9 +1,11 @@
-import { Plugin, PluginContext, ApiPlugin, ApiPluginConfig, PluginInstance } from './types';
+import { PluginContext, ApiPlugin, ApiPluginConfig, PluginInstance } from './types';
+import { TypedPlugin, PluginFactory } from './plugin-types';
 
-export class ApiRequestPlugin implements Plugin<ApiPluginConfig> {
-  name = 'api';
+export class ApiRequestPlugin implements TypedPlugin<'api'> {
+  name: 'api' = 'api';
   version = '1.0.0';
   config: ApiPluginConfig;
+  methods?: ApiPlugin;
   private context?: PluginContext;
   private sessionId?: string;
 
@@ -30,6 +32,7 @@ export class ApiRequestPlugin implements Plugin<ApiPluginConfig> {
       error: this.error.bind(this)
     };
 
+    this.methods = methods;
     (context as any).methods = methods;
     
     const instance = context as unknown as PluginInstance;
@@ -165,6 +168,6 @@ export class ApiRequestPlugin implements Plugin<ApiPluginConfig> {
   }
 }
 
-export function createApiPlugin(config?: ApiPluginConfig): ApiRequestPlugin {
-  return new ApiRequestPlugin(config);
-}
+export const createApiPlugin: PluginFactory<'api'> = (config?: Partial<ApiPluginConfig>): TypedPlugin<'api'> => {
+  return new ApiRequestPlugin(config as ApiPluginConfig);
+};

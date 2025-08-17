@@ -130,8 +130,42 @@ export {
   PerformancePluginConfig,
   SecurityPluginConfig,
   WebVitalsMetrics,
-  SecuritySeverity
+  SecuritySeverity,
+  // New type exports for better TypeScript support
+  PluginRegistry,
+  PluginName,
+  PluginMethods,
+  PluginConfigType,
+  TypedPlugin,
+  LoggerBuilder,
+  PluginFactory,
+  PluginFactories,
+  LoggerWithPluginsConfig,
+  EnabledPlugins,
+  ConfiguredLogger,
+  CustomPluginRegistry,
+  FullPluginRegistry,
+  FullPluginName,
+  // Builder functions
+  createLoggerBuilder,
+  createLoggerWithPlugins,
+  wrapLogger,
+  hasPlugin,
+  hasPlugins
 } from './plugins';
+
+// Export typed wrapper utilities for zero type casting
+export {
+  TypedLogger,
+  PartialTypedLogger,
+  TypedLoggerConfig,
+  createTypedLogger,
+  createPartialTypedLogger,
+  isPluginAvailable,
+  createLoggerWithSelectedPlugins,
+  createAsyncTypedLogger
+} from './plugins/typed-wrapper';
+
 
 // Default export
 export default defaultLogger;

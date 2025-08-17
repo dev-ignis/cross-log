@@ -176,9 +176,17 @@ logger.debug('Database query executed', 'db');
 logger.info('Component rendered', 'ui');
 ```
 
-### 🔌 Plugin System (New in v0.5.0)
+### 🔌 Plugin System with Full TypeScript Support (New in v0.5.0)
 
-Cross-log now includes a powerful plugin system for domain-specific logging patterns:
+Cross-log now includes a powerful plugin system with **complete TypeScript support** for domain-specific logging patterns.
+
+📚 **[Full TypeScript Plugin Documentation →](docs/TYPESCRIPT_PLUGINS.md)**
+
+#### Key Features
+- **Zero type casting required** - Full IDE autocomplete and type checking
+- **Builder pattern** for type-safe plugin composition
+- **Type guards** for runtime plugin checking
+- **Module augmentation** support for custom plugins
 
 #### Available Plugins
 
@@ -191,24 +199,26 @@ Cross-log now includes a powerful plugin system for domain-specific logging patt
 #### Basic Plugin Usage
 
 ```typescript
-import { createLogger, plugins } from 'cross-log';
+import { createLoggerBuilder, plugins } from 'cross-log';
 
-const logger = createLogger();
+// Type-safe plugin composition with builder pattern
+const logger = createLoggerBuilder()
+  .withPlugin(plugins.api({ includeSessionId: true }))
+  .withPlugin(plugins.database({ truncateQueries: 100 }))
+  .withPlugin(plugins.analytics({ providers: ['google', 'facebook'] }))
+  .withPlugin(plugins.performance({ webVitals: true }))
+  .withPlugin(plugins.security({ severity: true }))
+  .build();
 
-// Add plugins
-logger.use(plugins.api({ includeSessionId: true }));
-logger.use(plugins.database({ truncateQueries: 100 }));
-logger.use(plugins.analytics({ providers: ['google', 'facebook'] }));
-logger.use(plugins.performance({ webVitals: true }));
-logger.use(plugins.security({ severity: true }));
-
-// Use plugin methods
-logger.api?.request('GET', '/api/users', 120, 200);
-logger.database?.query('SELECT * FROM users', 45, 10);
-logger.analytics?.event('PageView', 'facebook', { page: '/home' });
-logger.performance?.webVitals({ fcp: 1200, lcp: 2100 });
-logger.security?.authSuccess('user_123', '2fa');
+// All methods are fully typed - no casting or optional chaining needed!
+logger.api.request('GET', '/api/users', 120, 200);
+logger.database.query('SELECT * FROM users', 45, 10);
+logger.analytics.event('PageView', 'facebook', { page: '/home' });
+logger.performance.webVitals({ fcp: 1200, lcp: 2100 });
+logger.security.authSuccess('user_123', '2fa');
 ```
+
+For the classic API style or dynamic plugin loading, see the [TypeScript documentation](docs/TYPESCRIPT_PLUGINS.md#migration-guide).
 
 #### API Plugin
 

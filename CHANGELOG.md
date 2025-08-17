@@ -5,6 +5,24 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.5.0] - 2025-01-17
+
+### Added
+- Complete TypeScript plugin system with full type safety
+- Builder pattern API for type-safe plugin composition (`createLoggerBuilder`)
+- Configuration-based plugin setup (`createLoggerWithPlugins`)
+- Zero type-casting required - all plugin methods fully typed
+- Module augmentation support for custom plugins
+- Type guards for runtime plugin checking (`hasPlugin`, `hasPlugins`)
+- Type-safe wrapper utilities (`TypedLogger`, `PartialTypedLogger`)
+- Comprehensive plugin TypeScript documentation
+- Type tests for compile-time type safety verification
+
+### Changed
+- Plugin `use()` method now returns `ILogger` for better type compatibility
+- Enhanced plugin system with proper TypeScript method inference
+- Improved plugin manager with type-safe plugin access
+
 ## [0.4.0] - 2025-01-12
 
 ### Added

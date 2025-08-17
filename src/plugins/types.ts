@@ -25,8 +25,10 @@ export interface PluginInstance {
 }
 
 export interface LoggerWithPlugins extends ILogger {
-  use(plugin: Plugin): void;
-  getPlugin(name: string): PluginInstance | undefined;
+  use(plugin: Plugin): ILogger;
+  getPlugin(name: string): Plugin | undefined;
+  hasPlugin(name: string): boolean;
+  removePlugin(name: string): void;
   api?: ApiPlugin;
   database?: DatabasePlugin;
   analytics?: AnalyticsPlugin;
