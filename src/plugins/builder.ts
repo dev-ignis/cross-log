@@ -119,6 +119,7 @@ export function createLoggerWithPlugins<T extends LoggerWithPluginsConfig>(
  */
 export function wrapLogger<P extends PluginName[]>(
   logger: ILogger,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   _pluginNames: P
 ): LoggerWithPlugins<P> {
   return logger as LoggerWithPlugins<P>;
